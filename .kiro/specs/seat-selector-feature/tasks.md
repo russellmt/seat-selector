@@ -151,20 +151,20 @@ Build the Seat Canvas page with grid rendering, icon selection, seat placement/d
     - **Property 4: Rotation State Cycles Through Cardinals**
     - **Validates: Requirements 10.2, 10.3, 10.4**
 
-- [ ] 10. Implement icon bank component
-  - [~] 10.1 Create IconBank component with 2-column grid layout
+- [x] 10. Implement icon bank component
+  - [x] 10.1 Create IconBank component with 2-column grid layout
     - Display available icons organized by capacity
     - Implement scrollable container for many icons
     - Show capacity labels on each icon
     - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5, 4.6_
   
-  - [~] 10.2 Implement icon selection and highlighting
+  - [x] 10.2 Implement icon selection and highlighting
     - Highlight selected icon with visual indicator
     - Update AppContext when icon is clicked
     - Show rotation state for selected icon
     - _Requirements: 5.1, 5.2, 5.3, 5.4_
   
-  - [~] 10.3 Write property tests for icon cycling
+  - [x] 10.3 Write property tests for icon cycling
     - **Property 3: Icon Cycling Wraps Correctly**
     - **Validates: Requirements 9.1, 9.2, 9.3, 9.4**
 
