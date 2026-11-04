@@ -26,3 +26,8 @@ export {
   truncateString,
   type ValidationResult,
 } from './stringUtils';
+
+/**
+ * Rotation utility functions for handling cardinal direction cycles
+ */
+export { rotate, rotateBack, rotateN } from './rotation';
