@@ -112,20 +112,20 @@ Build the Seat Canvas page with grid rendering, icon selection, seat placement/d
 
 ---
 
-- [ ] 8. Create base canvas components
-  - [~] 8.1 Create GridCanvas component with SVG canvas setup
+- [x] 8. Create base canvas components
+  - [x] 8.1 Create GridCanvas component with SVG canvas setup
     - Build SVG-based canvas container
     - Set up canvas dimensions and zoom defaults
     - Implement mouse event binding (click, drag, right-click)
     - _Requirements: 2.1, 2.2, 2.3_
   
-  - [~] 8.2 Implement GridRenderer component
+  - [x] 8.2 Implement GridRenderer component
     - Render subtle blue grid lines
     - Use light opacity (0.3) for unobtrusive appearance
     - Scale grid with zoom level (future feature)
     - _Requirements: 2.1, 2.2, 2.3_
   
-  - [~] 8.3 Write property tests for grid rendering
+  - [x] 8.3 Write property tests for grid rendering
     - **Property 21: Grid Coordinates Uniquely Identify Positions**
     - **Validates: Requirements 38.1, 38.2, 38.3, 38.4**
 

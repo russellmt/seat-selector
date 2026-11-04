@@ -1,0 +1,42 @@
+/**
+ * GridCanvas Component Styles
+ *
+ * Styles for the SVG-based interactive canvas used for seat placement
+ * and guest arrangement.
+ */
+
+.grid-canvas {
+  display: block;
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  cursor: crosshair;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+
+  /* Enable GPU acceleration for better performance */
+  will-change: transform;
+}
+
+/**
+ * When the canvas is in read-only mode (e.g., Guest Arrangement page),
+ * the cursor should be default instead of crosshair
+ */
+.grid-canvas.read-only {
+  cursor: default;
+}
+
+/**
+ * During drag operations, the cursor should indicate movement
+ */
+.grid-canvas.dragging {
+  cursor: grabbing;
+}
+
+/**
+ * Remove default touch action handling to prevent browser interference
+ * with our custom drag handling
+ */
+.grid-canvas {
+  touch-action: none;
+}
