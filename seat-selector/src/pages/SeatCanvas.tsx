@@ -1,6 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { RotationControls } from '../components/RotationControls';
+import { IconBank } from '../components/IconBank';
+import { iconConfigService } from '../services/IconConfigService';
 import './SeatCanvas.css';
 
 /**
@@ -12,11 +14,16 @@ import './SeatCanvas.css';
  * - Main Area: Icon bank sidebar + grid canvas
  * - Footer: Seat count, clear button, save button, and add guests button
  *
- * **Validates: Requirements 1.1, 3.1, 14.1, 15.1, 16.1**
+ * **Validates: Requirements 1.1, 3.1, 5.1, 5.2, 5.3, 5.4, 14.1, 15.1, 16.1**
  */
 export default function SeatCanvas() {
   const navigate = useNavigate();
-  const { setCurrentPage, selectedRotation, setRotation } = useApp();
+  const { setCurrentPage, selectedIconId, setSelectedIcon, selectedRotation, setRotation } = useApp();
+  const icons = iconConfigService.getAllConfigs();
+
+  const handleIconSelect = (iconId: string) => {
+    setSelectedIcon(iconId);
+  };
 
   const handleAddGuests = () => {
     setCurrentPage('guests');
@@ -53,9 +60,13 @@ export default function SeatCanvas() {
 
       {/* ====== MAIN AREA ====== */}
       <main className="canvas-main">
-        {/* Icon Bank Sidebar - will be implemented in task 10.1 */}
+        {/* Icon Bank Sidebar - Task 10.2: Icon selection and highlighting */}
         <aside className="icon-bank">
-          <div className="icon-bank-placeholder">Icon Bank</div>
+          <IconBank
+            icons={icons}
+            selectedIconId={selectedIconId}
+            onSelectIcon={handleIconSelect}
+          />
         </aside>
 
         {/* Grid Canvas Area - will be implemented in task 8 integration */}
