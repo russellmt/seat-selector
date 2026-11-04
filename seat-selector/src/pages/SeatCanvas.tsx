@@ -1,48 +1,101 @@
 import { useNavigate } from 'react-router-dom';
+import { useApp } from '../context/AppContext';
+import { RotationControls } from '../components/RotationControls';
+import './SeatCanvas.css';
 
+/**
+ * SeatCanvas Page Component
+ *
+ * Main page for creating and editing seat configurations.
+ * Implements a three-section vertical layout:
+ * - Header: Title input and rotation controls
+ * - Main Area: Icon bank sidebar + grid canvas
+ * - Footer: Seat count, clear button, save button, and add guests button
+ *
+ * **Validates: Requirements 1.1, 3.1, 14.1, 15.1, 16.1**
+ */
 export default function SeatCanvas() {
   const navigate = useNavigate();
+  const { setCurrentPage, selectedRotation, setRotation } = useApp();
 
   const handleAddGuests = () => {
+    setCurrentPage('guests');
     navigate('/arrangement');
   };
 
   const handleBackHome = () => {
+    setCurrentPage('home');
     navigate('/');
   };
 
   return (
     <div className="seat-canvas-page">
+      {/* ====== HEADER SECTION ====== */}
       <header className="canvas-header">
-        <h1>Seat Canvas</h1>
-        <button 
-          className="back-button"
-          onClick={handleBackHome}
-        >
-          Back to Home
-        </button>
+        <div className="header-content">
+          <button 
+            className="back-button"
+            onClick={handleBackHome}
+            aria-label="Back to home page"
+          >
+            ← Back
+          </button>
+          
+          <h1>Seat Canvas</h1>
+          
+          {/* Rotation controls */}
+          <RotationControls 
+            currentRotation={selectedRotation}
+            onRotate={setRotation}
+          />
+        </div>
       </header>
 
+      {/* ====== MAIN AREA ====== */}
       <main className="canvas-main">
+        {/* Icon Bank Sidebar - will be implemented in task 10.1 */}
         <aside className="icon-bank">
-          <p>Icon Bank - Coming soon</p>
+          <div className="icon-bank-placeholder">Icon Bank</div>
         </aside>
 
+        {/* Grid Canvas Area - will be implemented in task 8 integration */}
         <section className="grid-canvas">
-          <p>Grid Canvas - Coming soon</p>
+          <div className="grid-canvas-placeholder">Canvas Area</div>
         </section>
       </main>
 
+      {/* ====== FOOTER SECTION ====== */}
       <footer className="canvas-footer">
-        <div className="seat-count">Seats: 0</div>
-        <button className="clear-all-button">Clear All</button>
-        <button className="save-button">Save</button>
-        <button 
-          className="add-guests-button"
-          onClick={handleAddGuests}
-        >
-          Add Guests
-        </button>
+        <div className="footer-left">
+          <div className="seat-count">Seats: 0</div>
+        </div>
+
+        <div className="footer-center">
+          <button 
+            className="clear-all-button"
+            aria-label="Clear all seats from canvas"
+          >
+            Clear All
+          </button>
+          <button 
+            className="save-button"
+            disabled
+            title="Save functionality coming in Phase 2"
+            aria-label="Save configuration (Phase 2)"
+          >
+            Save
+          </button>
+        </div>
+
+        <div className="footer-right">
+          <button 
+            className="add-guests-button"
+            onClick={handleAddGuests}
+            aria-label="Navigate to guest arrangement page"
+          >
+            Add Guests
+          </button>
+        </div>
       </footer>
     </div>
   );

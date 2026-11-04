@@ -129,25 +129,25 @@ Build the Seat Canvas page with grid rendering, icon selection, seat placement/d
     - **Property 21: Grid Coordinates Uniquely Identify Positions**
     - **Validates: Requirements 38.1, 38.2, 38.3, 38.4**
 
-- [ ] 9. Create SeatCanvas page and header components
-  - [~] 9.1 Build SeatCanvas page layout with header, main area, footer
+- [x] 9. Create SeatCanvas page and header components
+  - [x] 9.1 Build SeatCanvas page layout with header, main area, footer
     - Create three-section layout (header, canvas area, footer)
     - Set up state management connection
     - _Requirements: 1.1, 3.1, 14.1, 15.1, 16.1_
   
-  - [~] 9.2 Implement TitleInput component
+  - [x] 9.2 Implement TitleInput component
     - Create text input with max 32 character limit
     - Update AppContext on input change
     - Display validation error if exceeded
     - _Requirements: 3.1, 3.2, 3.3, 3.4_
   
-  - [~] 9.3 Implement RotationControls component
+  - [x] 9.3 Implement RotationControls component
     - Display 4 directional buttons (left, up, right, down)
     - Highlight currently selected rotation
     - Update AppContext on button click
     - _Requirements: 10.1, 10.2, 10.3, 10.4, 10.5, 10.6_
   
-  - [~] 9.4 Write property tests for rotation state
+  - [x] 9.4 Write property tests for rotation state
     - **Property 4: Rotation State Cycles Through Cardinals**
     - **Validates: Requirements 10.2, 10.3, 10.4**
 
