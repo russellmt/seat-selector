@@ -168,20 +168,20 @@ Build the Seat Canvas page with grid rendering, icon selection, seat placement/d
     - **Property 3: Icon Cycling Wraps Correctly**
     - **Validates: Requirements 9.1, 9.2, 9.3, 9.4**
 
-- [ ] 11. Implement seat rendering and display
-  - [~] 11.1 Create SeatRenderer component
+- [x] 11. Implement seat rendering and display
+  - [x] 11.1 Create SeatRenderer component
     - Render placed seats with icon SVG at correct position
     - Apply rotation transform to each seat icon
     - Scale seats to match icon configuration dimensions
     - _Requirements: 11.1, 11.2, 11.3, 11.4, 11.5_
   
-  - [~] 11.2 Implement seat number display
+  - [x] 11.2 Implement seat number display
     - Display implicit seat numbers as white text
     - Show numbers in center of each grid square occupied by seat
     - For multi-grid seats, display same number in all occupied squares
     - _Requirements: 13.1, 13.2, 13.3, 13.4, 13.5_
   
-  - [~] 11.3 Write property tests for seat placement and numbering
+  - [x] 11.3 Write property tests for seat placement and numbering
     - **Property 1: Seat Placement Creates Unoccupied Placement**
     - **Property 8: Seat Count Equals Number of Seats**
     - **Validates: Requirements 7.1, 7.2, 15.1, 15.2, 15.3**
