@@ -10,12 +10,10 @@
  */
 
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, fireEvent } from '@testing-library/react';
 import { GridCanvas } from './GridCanvas';
-import type { Seat, GridPosition, Rotation } from '../../types';
 import type { IconConfig } from '../../types/Icon';
 import type { GridDimensions } from '../../utils/gridCoordinates';
-import type { GuestAssignmentMap } from '../../types/Guest';
 
 // Helper to check if SVG exists (avoid toBeInTheDocument which requires jest-dom)
 const expectSvgExists = (svg: SVGSVGElement | null) => {

@@ -2,7 +2,9 @@ import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { RotationControls } from '../components/RotationControls';
 import { IconBank } from '../components/IconBank';
+import { GridCanvas } from '../components/canvas';
 import { iconConfigService } from '../services/IconConfigService';
+import { GRID_SQUARE_SIZE_PX } from '../constants/gridConstants';
 import './SeatCanvas.css';
 
 /**
@@ -18,8 +20,20 @@ import './SeatCanvas.css';
  */
 export default function SeatCanvas() {
   const navigate = useNavigate();
-  const { setCurrentPage, selectedIconId, setSelectedIcon, selectedRotation, setRotation } = useApp();
+  const { 
+    setCurrentPage, 
+    selectedIconId, 
+    setSelectedIcon, 
+    selectedRotation, 
+    setRotation,
+    seats,
+  } = useApp();
   const icons = iconConfigService.getAllConfigs();
+  
+  // Create a map of icon configs for the canvas
+  const iconConfigs = new Map(
+    icons.map(icon => [icon.id, icon])
+  );
 
   const handleIconSelect = (iconId: string) => {
     setSelectedIcon(iconId);
@@ -33,6 +47,24 @@ export default function SeatCanvas() {
   const handleBackHome = () => {
     setCurrentPage('home');
     navigate('/');
+  };
+
+  // No-op callbacks for seat placement/deletion (task 13-14)
+  const handleSeatAdd = () => {
+    // Placeholder: actual seat placement logic comes in task 13
+  };
+
+  const handleSeatRemove = () => {
+    // Placeholder: actual seat deletion logic comes in task 14
+  };
+
+  // Grid dimensions for the canvas
+  const gridDimensions = {
+    cols: 30,
+    rows: 20,
+    squareSize: GRID_SQUARE_SIZE_PX,
+    offsetX: 0,
+    offsetY: 0,
   };
 
   return (
@@ -69,9 +101,17 @@ export default function SeatCanvas() {
           />
         </aside>
 
-        {/* Grid Canvas Area - will be implemented in task 8 integration */}
+        {/* Grid Canvas Area - Integrated with child renderers */}
         <section className="grid-canvas">
-          <div className="grid-canvas-placeholder">Canvas Area</div>
+          <GridCanvas
+            seats={seats}
+            selectedIconId={selectedIconId}
+            selectedRotation={selectedRotation}
+            onSeatAdd={handleSeatAdd}
+            onSeatRemove={handleSeatRemove}
+            iconConfigs={iconConfigs}
+            gridDimensions={gridDimensions}
+          />
         </section>
       </main>
 

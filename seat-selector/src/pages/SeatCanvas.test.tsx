@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { AppProvider } from '../context/AppContext';
@@ -279,7 +279,7 @@ describe('SeatCanvas Page - Icon Selection and Highlighting (Task 10.2)', () => 
     });
 
     it('should show selected icon with current rotation state', () => {
-      const { container } = render(<SeatCanvasWithProviders />);
+      render(<SeatCanvasWithProviders />);
       
       // The default rotation should be 'down'
       // We can verify this is reflected in the rotation controls
