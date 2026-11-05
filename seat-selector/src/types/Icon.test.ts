@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import type { GridSize, IconConfig, Rotation } from './Icon';
+import { normalizeIconConfig } from './Icon';
 
 describe('Icon Types', () => {
   describe('GridSize', () => {
@@ -53,13 +54,13 @@ describe('Icon Types', () => {
   });
 
   describe('IconConfig', () => {
-    it('should create a valid icon config', () => {
+    it('should create a valid SVG icon config', () => {
       const config: IconConfig = {
         id: 'test-icon',
         capacity: 1,
         size: { width: 1, height: 1 },
         name: 'Test Icon',
-        svg: '<rect />',
+        visual: { type: 'svg', content: '<rect />' },
         color: '#FF0000'
       };
       
@@ -68,8 +69,24 @@ describe('Icon Types', () => {
       expect(config.size.width).toBe(1);
       expect(config.size.height).toBe(1);
       expect(config.name).toBe('Test Icon');
-      expect(config.svg).toBe('<rect />');
+      expect(config.visual.type).toBe('svg');
+      expect(config.visual.type === 'svg' && config.visual.content).toBe('<rect />');
       expect(config.color).toBe('#FF0000');
+    });
+
+    it('should create a valid image icon config', () => {
+      const config: IconConfig = {
+        id: 'test-image',
+        capacity: 1,
+        size: { width: 1, height: 1 },
+        name: 'Test Image',
+        visual: { type: 'image', url: 'https://cdn.example.com/icon.png' },
+        color: '#FF0000'
+      };
+      
+      expect(config.id).toBe('test-image');
+      expect(config.visual.type).toBe('image');
+      expect(config.visual.type === 'image' && config.visual.url).toBe('https://cdn.example.com/icon.png');
     });
 
     it('should require all properties', () => {
@@ -78,7 +95,7 @@ describe('Icon Types', () => {
         capacity: 0,
         size: { width: 2, height: 2 },
         name: 'Table',
-        svg: '<circle />',
+        visual: { type: 'svg', content: '<circle />' },
         color: '#E8B4A2'
       };
       
@@ -86,7 +103,7 @@ describe('Icon Types', () => {
       expect(config).toHaveProperty('capacity');
       expect(config).toHaveProperty('size');
       expect(config).toHaveProperty('name');
-      expect(config).toHaveProperty('svg');
+      expect(config).toHaveProperty('visual');
       expect(config).toHaveProperty('color');
     });
 
@@ -96,7 +113,7 @@ describe('Icon Types', () => {
         capacity: 3,
         size: { width: 3, height: 1 },
         name: 'Couch',
-        svg: '<rect />',
+        visual: { type: 'svg', content: '<rect />' },
         color: '#A0522D'
       };
       
@@ -111,7 +128,7 @@ describe('Icon Types', () => {
           capacity: 0,
           size: { width: 2, height: 2 },
           name: 'Table',
-          svg: '<circle />',
+          visual: { type: 'svg', content: '<circle />' },
           color: '#E8B4A2'
         },
         {
@@ -119,7 +136,7 @@ describe('Icon Types', () => {
           capacity: 1,
           size: { width: 1, height: 1 },
           name: 'Chair',
-          svg: '<rect />',
+          visual: { type: 'svg', content: '<rect />' },
           color: '#8B4513'
         },
         {
@@ -127,7 +144,7 @@ describe('Icon Types', () => {
           capacity: 3,
           size: { width: 3, height: 1 },
           name: 'Couch',
-          svg: '<rect />',
+          visual: { type: 'svg', content: '<rect />' },
           color: '#A0522D'
         }
       ];
@@ -135,6 +152,37 @@ describe('Icon Types', () => {
       expect(configs[0].capacity).toBe(0);
       expect(configs[1].capacity).toBe(1);
       expect(configs[2].capacity).toBe(3);
+    });
+  });
+
+  describe('normalizeIconConfig', () => {
+    it('should pass through valid IconConfig objects', () => {
+      const config: IconConfig = {
+        id: 'test',
+        capacity: 1,
+        size: { width: 1, height: 1 },
+        name: 'Test',
+        visual: { type: 'svg', content: '<rect />' },
+        color: '#000'
+      };
+
+      const normalized = normalizeIconConfig(config);
+      expect(normalized).toEqual(config);
+    });
+
+    it('should convert legacy svg field to visual field', () => {
+      const legacyConfig = {
+        id: 'test',
+        capacity: 1,
+        size: { width: 1, height: 1 },
+        name: 'Test',
+        svg: '<rect />',
+        color: '#000'
+      };
+
+      const normalized = normalizeIconConfig(legacyConfig);
+      expect(normalized.visual.type).toBe('svg');
+      expect(normalized.visual.type === 'svg' && normalized.visual.content).toBe('<rect />');
     });
   });
 });

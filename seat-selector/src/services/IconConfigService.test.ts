@@ -24,7 +24,7 @@ describe('IconConfigService', () => {
           size: { width: 1, height: 1 },
           name: 'Custom Icon',
           color: '#FF0000',
-          svg: '<circle cx="0.5" cy="0.5" r="0.4"/>'
+          visual: { type: 'svg', content: '<circle cx="0.5" cy="0.5" r="0.4"/>' }
         }
       ];
       const customService = new IconConfigService(customIcons);
@@ -173,9 +173,16 @@ describe('IconConfigService', () => {
         expect(typeof icon.color).toBe('string');
         expect(icon.color).toMatch(/^#[0-9A-F]{6}$/i);
         
-        expect(icon.svg).toBeDefined();
-        expect(typeof icon.svg).toBe('string');
-        expect(icon.svg.length).toBeGreaterThan(0);
+        expect(icon.visual).toBeDefined();
+        expect(icon.visual.type === 'svg' || icon.visual.type === 'image').toBe(true);
+        
+        if (icon.visual.type === 'svg') {
+          expect(typeof icon.visual.content).toBe('string');
+          expect(icon.visual.content.length).toBeGreaterThan(0);
+        } else if (icon.visual.type === 'image') {
+          expect(typeof icon.visual.url).toBe('string');
+          expect(icon.visual.url.length).toBeGreaterThan(0);
+        }
       });
     });
   });

@@ -2,16 +2,16 @@
  * SeatRenderer Component
  *
  * Renders placed seats on the canvas with proper positioning, rotation, and scaling.
- * Each seat displays its icon with applied transforms and seat numbers.
+ * Each seat displays its icon (SVG or image) with applied transforms and seat numbers.
  *
  * **Validates: Requirements 11.1, 11.2, 11.3, 11.4, 11.5, 13.1, 13.2, 13.3, 13.4, 13.5**
  *
  * Algorithm: RenderSeat
  * For each seat:
  * 1. Calculate pixel position from grid position using gridToPixel
- * 2. Apply rotation transform to SVG icon (via CSS transform)
+ * 2. Apply rotation transform to seat icon (via CSS transform)
  * 3. Scale icon to match icon size (width × height grid squares)
- * 4. Render seat icon at calculated position
+ * 4. Render seat icon at calculated position (SVG or image)
  * 5. For multi-grid seats:
  *    - Calculate all grid squares occupied using getGridSquaresOccupied
  *    - Render seat number in center of each grid square
@@ -79,8 +79,9 @@ function getTransformOrigin(
 /**
  * SeatRenderer Component
  *
- * Renders all placed seats with their icons, rotations, and seat numbers.
+ * Renders all placed seats with their icons (SVG or image), rotations, and seat numbers.
  * Uses CSS transforms for GPU-accelerated rotation and scaling.
+ * Supports both inline SVG content and image URLs (PNG, JPG, etc. from CDN).
  *
  * Requirements: 11.1, 11.2, 11.3, 11.4, 11.5, 13.1, 13.2, 13.3, 13.4, 13.5
  */
@@ -145,28 +146,49 @@ export const SeatRenderer: React.FC<SeatRendererProps> = ({
             willChange: 'transform',
           }}
         >
-          <svg
-            x={startPixelX}
-            y={startPixelY}
-            width={seatWidthPixels}
-            height={seatHeightPixels}
-            viewBox="0 0 2.8 2.8" // Large enough to accommodate 3×1 loveseat
-            preserveAspectRatio="xMidYMid meet"
-            className="seat-icon-svg"
-            style={{
-              pointerEvents: 'none', // Prevent interaction with icon itself
-            }}
-          >
-            {/* Render the icon SVG content */}
-            <g
-              dangerouslySetInnerHTML={{
-                __html: iconConfig.svg,
-              }}
+          {/* SVG icon: render inline SVG content */}
+          {iconConfig.visual.type === 'svg' && (
+            <svg
+              x={startPixelX}
+              y={startPixelY}
+              width={seatWidthPixels}
+              height={seatHeightPixels}
+              viewBox="0 0 2.8 2.8" // Large enough to accommodate 3×1 loveseat
+              preserveAspectRatio="xMidYMid meet"
+              className="seat-icon-svg"
               style={{
-                color: iconConfig.color,
+                pointerEvents: 'none', // Prevent interaction with icon itself
+              }}
+            >
+              {/* Render the icon SVG content */}
+              <g
+                dangerouslySetInnerHTML={{
+                  __html: iconConfig.visual.content,
+                }}
+                style={{
+                  color: iconConfig.color,
+                }}
+              />
+            </svg>
+          )}
+
+          {/* Image icon: render as SVG image element for consistent transform support */}
+          {iconConfig.visual.type === 'image' && (
+            <image
+              x={startPixelX}
+              y={startPixelY}
+              width={seatWidthPixels}
+              height={seatHeightPixels}
+              href={iconConfig.visual.url}
+              className="seat-icon-image"
+              style={{
+                pointerEvents: 'none', // Prevent interaction with image itself
+              }}
+              onError={() => {
+                console.warn(`Failed to load icon image: ${iconConfig.visual.type === 'image' ? iconConfig.visual.url : 'unknown'}`);
               }}
             />
-          </svg>
+          )}
         </g>
 
         {/* Render seat numbers for each grid square occupied by this seat */}

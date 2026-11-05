@@ -26,7 +26,7 @@ const mockIconConfigs = new Map<string, IconConfig>([
       size: { width: 1, height: 1 },
       name: 'Chair',
       color: '#8B4513',
-      svg: '<rect />',
+      visual: { type: 'svg', content: '<rect />' },
     },
   ],
   [
@@ -37,7 +37,7 @@ const mockIconConfigs = new Map<string, IconConfig>([
       size: { width: 2, height: 1 },
       name: 'Loveseat',
       color: '#D2691E',
-      svg: '<rect />',
+      visual: { type: 'svg', content: '<rect />' },
     },
   ],
   [
@@ -48,7 +48,7 @@ const mockIconConfigs = new Map<string, IconConfig>([
       size: { width: 2, height: 2 },
       name: 'Round Table',
       color: '#E8B4A2',
-      svg: '<circle />',
+      visual: { type: 'svg', content: '<circle />' },
     },
   ],
 ]);

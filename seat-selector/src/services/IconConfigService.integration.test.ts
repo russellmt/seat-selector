@@ -15,7 +15,7 @@ describe('IconConfigService Integration Tests', () => {
         expect(config).toHaveProperty('capacity');
         expect(config).toHaveProperty('size');
         expect(config).toHaveProperty('name');
-        expect(config).toHaveProperty('svg');
+        expect(config).toHaveProperty('visual');
         expect(config).toHaveProperty('color');
       });
     });
@@ -27,7 +27,7 @@ describe('IconConfigService Integration Tests', () => {
         size: { width: 2, height: 1 } as GridSize,
         name: 'Custom Seat',
         color: '#FF00FF',
-        svg: '<rect />'
+        visual: { type: 'svg' as const, content: '<rect />' }
       };
 
       const service = new IconConfigService([customConfig]);
@@ -53,8 +53,8 @@ describe('IconConfigService Integration Tests', () => {
       expect(config?.name).toBeDefined();
       expect(typeof config?.name).toBe('string');
 
-      expect(config?.svg).toBeDefined();
-      expect(typeof config?.svg).toBe('string');
+      expect(config?.visual).toBeDefined();
+      expect(config?.visual.type === 'svg' || config?.visual.type === 'image').toBe(true);
 
       expect(config?.color).toBeDefined();
       expect(typeof config?.color).toBe('string');
