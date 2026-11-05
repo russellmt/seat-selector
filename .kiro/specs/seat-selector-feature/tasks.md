@@ -194,21 +194,21 @@ Build the Seat Canvas page with grid rendering, icon selection, seat placement/d
     - Hide preview when cursor leaves canvas
     - _Requirements: 6.1, 6.2, 6.3, 6.4, 6.5_
 
-- [ ] 13. Implement left-click seat placement
-  - [~] 13.1 Build click handler and seat creation logic
+- [x] 13. Implement left-click seat placement
+  - [x] 13.1 Build click handler and seat creation logic
     - Detect left-click on canvas
     - Create seat at grid-quantized position
     - Check for collisions with existing seats
     - Add seat to AppContext state
     - _Requirements: 7.1, 7.2, 7.4_
   
-  - [~] 13.2 Implement single-point and drag placement
+  - [x] 13.2 Implement single-point and drag placement
     - Support single click placement
     - Support click-and-drag to place multiple seats
     - Recalculate seat numbers after each placement
     - _Requirements: 7.1, 7.3, 7.4_
   
-  - [~] 13.3 Write property tests for seat placement
+  - [x] 13.3 Write property tests for seat placement
     - **Property 1: Seat Placement Creates Unoccupied Placement**
     - **Property 5: Icon Size Matches Configuration**
     - **Validates: Requirements 7.1, 7.2, 11.1, 11.2, 11.3, 11.4, 11.5**

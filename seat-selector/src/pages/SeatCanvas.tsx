@@ -5,6 +5,10 @@ import { IconBank } from '../components/IconBank';
 import { GridCanvas } from '../components/canvas';
 import { iconConfigService } from '../services/IconConfigService';
 import { GRID_SQUARE_SIZE_PX } from '../constants/gridConstants';
+import { hasCollision } from '../utils/collision';
+import { createSeat } from '../types/Seat';
+import type { GridPosition } from '../types/Seat';
+import type { Rotation } from '../types/Icon';
 import './SeatCanvas.css';
 
 /**
@@ -27,6 +31,8 @@ export default function SeatCanvas() {
     selectedRotation, 
     setRotation,
     seats,
+    addSeat,
+    updateSeatNumbers,
   } = useApp();
   const icons = iconConfigService.getAllConfigs();
   
@@ -49,9 +55,30 @@ export default function SeatCanvas() {
     navigate('/');
   };
 
-  // No-op callbacks for seat placement/deletion (task 13-14)
-  const handleSeatAdd = () => {
-    // Placeholder: actual seat placement logic comes in task 13
+  // Seat placement handler - creates seat at grid-quantized position
+  // Checks for collisions with existing seats
+  // Recalculates seat numbers after each placement
+  const handleSeatAdd = (position: GridPosition, iconId: string, rotation: Rotation) => {
+    // Get the icon configuration to check size and validate placement
+    const iconConfig = iconConfigs.get(iconId);
+    if (!iconConfig) return;
+    
+    // Check for collisions with existing seats
+    if (hasCollision(position, iconConfig.size, seats, gridDimensions, iconConfigs)) {
+      // Prevent placement if collision detected
+      return;
+    }
+    
+    // Create new seat with generated ID
+    const newSeat = createSeat(iconId, position, rotation);
+    
+    // Add to AppContext state
+    addSeat(newSeat);
+    
+    // Recalculate seat numbering after placement
+    // Note: This is called for each seat in a drag operation
+    // An optimization would be to batch updates, but this ensures correctness
+    updateSeatNumbers();
   };
 
   const handleSeatRemove = () => {
