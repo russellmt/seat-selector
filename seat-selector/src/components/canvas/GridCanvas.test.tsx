@@ -32,7 +32,7 @@ const createMockIconConfig = (id: string, capacity: number): IconConfig => ({
   capacity,
   size: { width: 1, height: 1 },
   name: `Icon ${id}`,
-  svg: '<circle cx="0.5" cy="0.5" r="0.4" />',
+  visual: { type: 'svg', content: '<circle cx="0.5" cy="0.5" r="0.4" />' },
   color: '#E8B4A2',
 });
 

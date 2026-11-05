@@ -6,3 +6,4 @@
 
 export { GridCanvas, type GridCanvasProps } from './GridCanvas';
 export { GridRenderer, type GridRendererProps } from './GridRenderer';
+export { SeatRenderer, type SeatRendererProps } from './SeatRenderer';

@@ -25,6 +25,8 @@ export interface IconBankProps {
  * Displays available seat icons organized by seating capacity in a 2-column grid layout.
  * Icons are sorted by ascending capacity (0-person table first, then 1-person chair, etc.).
  * Each icon displays its capacity label and is highlighted when selected.
+ * 
+ * Supports both SVG icons (inline) and image icons (PNG, JPG from CDN).
  *
  * Features:
  * - 2-column grid layout with automatic row calculation
@@ -35,14 +37,15 @@ export interface IconBankProps {
  * - Responsive sizing based on parent container width
  * - Keyboard navigation support (arrow keys)
  * - Accessible ARIA labels
+ * - Support for both SVG and image icons
  *
  * **Validates: Requirements 4.1, 4.2, 4.3, 4.4, 4.5, 4.6**
  *
  * @example
  * ```tsx
  * const icons = [
- *   { id: 'chair-1', capacity: 1, name: 'Chair', ... },
- *   { id: 'table-4', capacity: 0, name: 'Round Table', ... }
+ *   { id: 'chair-1', capacity: 1, name: 'Chair', visual: { type: 'svg', content: '...' } },
+ *   { id: 'table-4', capacity: 0, name: 'Round Table', visual: { type: 'image', url: 'https://...' } }
  * ];
  *
  * <IconBank
@@ -116,11 +119,28 @@ export const IconBank: React.FC<IconBankProps> = ({
                   height: `${icon.size.height * 30}px`,
                 }}
               >
-                <svg
-                  viewBox="0 0 2 2"
-                  className="icon-svg"
-                  dangerouslySetInnerHTML={{ __html: icon.svg }}
-                />
+                {/* SVG icon display */}
+                {icon.visual.type === 'svg' && (
+                  <svg
+                    viewBox="0 0 2 2"
+                    className="icon-svg"
+                    dangerouslySetInnerHTML={{ __html: icon.visual.content }}
+                  />
+                )}
+
+                {/* Image icon display */}
+                {icon.visual.type === 'image' && (
+                  <img
+                    src={icon.visual.url}
+                    alt={icon.name}
+                    className="icon-image"
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'contain',
+                    }}
+                  />
+                )}
               </div>
               <div className="icon-label">{getCapacityLabel(icon.capacity)}</div>
             </div>

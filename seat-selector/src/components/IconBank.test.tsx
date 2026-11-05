@@ -13,7 +13,7 @@ const mockIcons: IconConfig[] = [
     size: { width: 2, height: 2 },
     name: 'Round Table (4-top)',
     color: '#E8B4A2',
-    svg: '<circle cx="1" cy="1" r="0.8" fill="currentColor" stroke="#333" stroke-width="0.05"/>',
+    visual: { type: 'svg', content: '<circle cx="1" cy="1" r="0.8" fill="currentColor" stroke="#333" stroke-width="0.05"/>' },
   },
   {
     id: 'chair-1',
@@ -21,7 +21,7 @@ const mockIcons: IconConfig[] = [
     size: { width: 1, height: 1 },
     name: 'Chair',
     color: '#8B4513',
-    svg: '<rect x="0.2" y="0.2" width="0.6" height="0.6" fill="currentColor" stroke="#333" stroke-width="0.05" rx="0.05"/>',
+    visual: { type: 'svg', content: '<rect x="0.2" y="0.2" width="0.6" height="0.6" fill="currentColor" stroke="#333" stroke-width="0.05" rx="0.05"/>' },
   },
   {
     id: 'loveseat-2',
@@ -29,7 +29,7 @@ const mockIcons: IconConfig[] = [
     size: { width: 2, height: 1 },
     name: 'Loveseat',
     color: '#D2691E',
-    svg: '<rect x="0.1" y="0.2" width="1.8" height="0.6" fill="currentColor" stroke="#333" stroke-width="0.05" rx="0.05"/>',
+    visual: { type: 'svg', content: '<rect x="0.1" y="0.2" width="1.8" height="0.6" fill="currentColor" stroke="#333" stroke-width="0.05" rx="0.05"/>' },
   },
   {
     id: 'couch-3',
@@ -37,7 +37,7 @@ const mockIcons: IconConfig[] = [
     size: { width: 3, height: 1 },
     name: 'Couch',
     color: '#A0522D',
-    svg: '<rect x="0.1" y="0.2" width="2.8" height="0.6" fill="currentColor" stroke="#333" stroke-width="0.05" rx="0.05"/>',
+    visual: { type: 'svg', content: '<rect x="0.1" y="0.2" width="2.8" height="0.6" fill="currentColor" stroke="#333" stroke-width="0.05" rx="0.05"/>' },
   },
 ];
 
@@ -607,7 +607,7 @@ describe('IconBank Component', () => {
         size: { width: 1, height: 1 },
         name: `Icon ${i}`,
         color: '#000000',
-        svg: '<circle cx="1" cy="1" r="0.8" fill="currentColor"/>',
+        visual: { type: 'svg', content: '<circle cx="1" cy="1" r="0.8" fill="currentColor"/>' },
       }));
 
       const { container } = render(
