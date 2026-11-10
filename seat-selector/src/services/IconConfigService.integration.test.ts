@@ -131,7 +131,7 @@ describe('IconConfigService Integration Tests', () => {
       expect(chair?.color).toBe('#8B4513');
     });
 
-    it('should have 2-person loveseat with 2x1 grid', () => {
+    it('should have 2-person loveseat with 2x1 grid (horizontal when DOWN/UP)', () => {
       const loveseat = DEFAULT_ICONS.find(i => i.id === 'loveseat-2');
       expect(loveseat?.capacity).toBe(2);
       expect(loveseat?.size.width).toBe(2);
@@ -139,7 +139,7 @@ describe('IconConfigService Integration Tests', () => {
       expect(loveseat?.color).toBe('#D2691E');
     });
 
-    it('should have 3-person couch with 3x1 grid', () => {
+    it('should have 3-person couch with 3x1 grid (horizontal when DOWN/UP)', () => {
       const couch = DEFAULT_ICONS.find(i => i.id === 'couch-3');
       expect(couch?.capacity).toBe(3);
       expect(couch?.size.width).toBe(3);

@@ -27,8 +27,8 @@ describe('Configuration Types and Utilities', () => {
     });
 
     it('should create a configuration with seats', () => {
-      const seat1 = createSeat('chair-1', createGridPosition(0, 0), 'down', 1);
-      const seat2 = createSeat('chair-1', createGridPosition(1, 0), 'down', 2);
+      const seat1 = createSeat('chair-1', createGridPosition(0, 0), 'down');
+      const seat2 = createSeat('chair-1', createGridPosition(1, 0), 'down');
       const seats = [seat1, seat2];
 
       const config = createSeatingConfiguration('My Event', seats);
@@ -139,8 +139,8 @@ describe('Configuration Types and Utilities', () => {
     });
 
     it('should preserve seats in configuration', () => {
-      const seat1 = createSeat('chair-1', createGridPosition(0, 0), 'down', 1);
-      const seat2 = createSeat('chair-1', createGridPosition(1, 0), 'down', 2);
+      const seat1 = createSeat('chair-1', createGridPosition(0, 0), 'down');
+      const seat2 = createSeat('chair-1', createGridPosition(1, 0), 'down');
       const config1 = createSeatingConfiguration('Test', [seat1, seat2]);
 
       const config2 = updateConfigurationLastModified(config1);
@@ -161,7 +161,7 @@ describe('Configuration Types and Utilities', () => {
     });
 
     it('should maintain configuration immutability', () => {
-      const seats = [createSeat('chair-1', createGridPosition(0, 0), 'down', 1)];
+      const seats = [createSeat('chair-1', createGridPosition(0, 0), 'down')];
       const config = createSeatingConfiguration('Test', seats);
 
       // Verify seats array wasn't mutated

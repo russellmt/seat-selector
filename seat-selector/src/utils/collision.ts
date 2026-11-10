@@ -5,17 +5,18 @@
  */
 
 import type { GridPosition, Seat } from '../types/Seat';
-import type { GridSize, IconConfig } from '../types/Icon';
+import type { GridSize, IconConfig, Rotation } from '../types/Icon';
 import type { GridDimensions } from './gridCoordinates';
+import { getRotatedSize } from './rotationSize';
 
 /**
  * Checks if a seat of given size at a position would collide with any existing seats
  *
  * Algorithm: GetCollisions
- * Input: targetPosition (grid cell), seat size (width × height)
+ * Input: targetPosition (grid cell), seat size (width × height), rotation
  * Output: list of seats at those positions, or empty if clear
  *
- * 1. Calculate all grid squares occupied by the seat footprint
+ * 1. Calculate all grid squares occupied by the seat footprint (rotation-aware)
  * 2. For each grid square, check if a seat already exists there
  * 3. Return list of colliding seats
  * 4. If list is empty, placement is allowed
@@ -26,6 +27,8 @@ import type { GridDimensions } from './gridCoordinates';
  * @param seatSize - the size of the seat (width and height in grid squares)
  * @param existingSeats - array of currently placed seats
  * @param gridDimensions - grid metadata for bounds checking
+ * @param rotation - the rotation state of the new seat
+ * @param iconConfigs - map of icon configurations for size lookup
  * @returns true if placement would collide with existing seats, false if clear
  *
  * Requirements: 7.3, 8.2
@@ -35,9 +38,15 @@ export function hasCollision(
   seatSize: GridSize,
   existingSeats: Seat[],
   gridDimensions: GridDimensions,
+  rotation?: Rotation,
   iconConfigs?: Map<string, IconConfig>,
 ): boolean {
-  const occupiedSquares = getGridSquaresOccupied(position, seatSize);
+  // Use rotation-aware size if rotation is provided
+  const effectiveSize = rotation
+    ? getRotatedSize(seatSize, rotation)
+    : seatSize;
+
+  const occupiedSquares = getGridSquaresOccupied(position, effectiveSize);
 
   for (const square of occupiedSquares) {
     // Check bounds
@@ -52,12 +61,12 @@ export function hasCollision(
 
     // Check for collision with existing seats
     for (const existingSeat of existingSeats) {
-      // Determine size of existing seat
+      // Determine size of existing seat (rotation-aware)
       let existingSeatSize = { width: 1, height: 1 };
       if (iconConfigs) {
         const config = iconConfigs.get(existingSeat.iconId);
         if (config) {
-          existingSeatSize = config.size;
+          existingSeatSize = getRotatedSize(config.size, existingSeat.rotation);
         }
       }
 
@@ -206,10 +215,9 @@ export function findSeatsInPath(
         continue;
       }
 
-      const occupiedSquares = getGridSquaresOccupied(
-        seat.position,
-        iconConfig.size,
-      );
+      // Use rotation-aware size
+      const rotatedSize = getRotatedSize(iconConfig.size, seat.rotation);
+      const occupiedSquares = getGridSquaresOccupied(seat.position, rotatedSize);
 
       const seatOccupiesPathPosition = occupiedSquares.some(
         (square) =>
@@ -239,6 +247,7 @@ export function positionOverlapsSeat(
   seat: Seat,
   seatSize: GridSize,
 ): boolean {
-  const seatSquares = getGridSquaresOccupied(seat.position, seatSize);
+  const rotatedSize = getRotatedSize(seatSize, seat.rotation);
+  const seatSquares = getGridSquaresOccupied(seat.position, rotatedSize);
   return seatSquares.some((s) => s.col === position.col && s.row === position.row);
 }

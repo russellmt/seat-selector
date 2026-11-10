@@ -31,7 +31,6 @@ function createMockSeat(overrides?: Partial<Seat>): Seat {
     iconId: 'chair-1',
     position: { col: 0, row: 0 },
     rotation: 'down',
-    number: 1,
     ...overrides,
   };
 }
@@ -91,13 +90,11 @@ describe('SeatRenderer Component', () => {
     it('renders without error when seats array is empty', () => {
       const iconConfigs = new Map<string, IconConfig>();
       const gridDimensions = createMockGridDimensions();
-      const seatNumbers = new Map<string, number>();
 
       const { container } = render(
         <svg>
           <SeatRenderer
             seats={[]}
-            seatNumbers={seatNumbers}
             gridDimensions={gridDimensions}
             iconConfigs={iconConfigs}
           />
@@ -121,17 +118,10 @@ describe('SeatRenderer Component', () => {
       const iconConfigs = new Map<string, IconConfig>();
       iconConfigs.set(iconConfig.id, iconConfig);
 
-      // Calculate expected position: (col * squareSize + offsetX, row * squareSize + offsetY)
-      // (2 * 40 + 100, 3 * 40 + 100) = (180, 220)
-
-      const seatNumbers = new Map<string, number>();
-      seatNumbers.set('2,3', 1);
-
       const { container } = render(
         <svg>
           <SeatRenderer
             seats={[seat]}
-            seatNumbers={seatNumbers}
             gridDimensions={gridDimensions}
             iconConfigs={iconConfigs}
           />
@@ -163,14 +153,10 @@ describe('SeatRenderer Component', () => {
       const iconConfigs = new Map<string, IconConfig>();
       iconConfigs.set(iconConfig.id, iconConfig);
 
-      const seatNumbers = new Map<string, number>();
-      seatNumbers.set('0,0', 1);
-
       const { container } = render(
         <svg>
           <SeatRenderer
             seats={[seat]}
-            seatNumbers={seatNumbers}
             gridDimensions={gridDimensions}
             iconConfigs={iconConfigs}
           />
@@ -196,14 +182,10 @@ describe('SeatRenderer Component', () => {
       const iconConfigs = new Map<string, IconConfig>();
       iconConfigs.set(iconConfig.id, iconConfig);
 
-      const seatNumbers = new Map<string, number>();
-      seatNumbers.set('0,0', 1);
-
       const { container } = render(
         <svg>
           <SeatRenderer
             seats={[seat]}
-            seatNumbers={seatNumbers}
             gridDimensions={gridDimensions}
             iconConfigs={iconConfigs}
           />
@@ -232,14 +214,10 @@ describe('SeatRenderer Component', () => {
       const iconConfigs = new Map<string, IconConfig>();
       iconConfigs.set(iconConfig.id, iconConfig);
 
-      const seatNumbers = new Map<string, number>();
-      seatNumbers.set('2,3', 1);
-
       const { container } = render(
         <svg>
           <SeatRenderer
             seats={[seat]}
-            seatNumbers={seatNumbers}
             gridDimensions={gridDimensions}
             iconConfigs={iconConfigs}
           />
@@ -272,14 +250,10 @@ describe('SeatRenderer Component', () => {
       const iconConfigs = new Map<string, IconConfig>();
       iconConfigs.set(iconConfig.id, iconConfig);
 
-      const seatNumbers = new Map<string, number>();
-      seatNumbers.set('0,0', 1);
-
       const { container } = render(
         <svg>
           <SeatRenderer
             seats={[seat]}
-            seatNumbers={seatNumbers}
             gridDimensions={gridDimensions}
             iconConfigs={iconConfigs}
           />
@@ -305,17 +279,10 @@ describe('SeatRenderer Component', () => {
       const iconConfigs = new Map<string, IconConfig>();
       iconConfigs.set(iconConfig.id, iconConfig);
 
-      const seatNumbers = new Map<string, number>();
-      seatNumbers.set('0,0', 1);
-      seatNumbers.set('1,0', 1);
-      seatNumbers.set('0,1', 1);
-      seatNumbers.set('1,1', 1);
-
       const { container } = render(
         <svg>
           <SeatRenderer
             seats={[seat]}
-            seatNumbers={seatNumbers}
             gridDimensions={gridDimensions}
             iconConfigs={iconConfigs}
           />
@@ -348,15 +315,10 @@ describe('SeatRenderer Component', () => {
       iconConfigs.set(svgIconConfig.id, svgIconConfig);
       iconConfigs.set(imageIconConfig.id, imageIconConfig);
 
-      const seatNumbers = new Map<string, number>();
-      seatNumbers.set('0,0', 1);
-      seatNumbers.set('1,0', 2);
-
       const { container } = render(
         <svg>
           <SeatRenderer
             seats={[svgSeat, imageSeat]}
-            seatNumbers={seatNumbers}
             gridDimensions={gridDimensions}
             iconConfigs={iconConfigs}
           />
@@ -391,17 +353,10 @@ describe('SeatRenderer Component', () => {
       const iconConfigs = new Map<string, IconConfig>();
       iconConfigs.set(iconConfig.id, iconConfig);
 
-      const seatNumbers = new Map<string, number>();
-      seatNumbers.set('1,1', 1);
-      seatNumbers.set('2,1', 1);
-      seatNumbers.set('1,2', 1);
-      seatNumbers.set('2,2', 1);
-
       const { container } = render(
         <svg>
           <SeatRenderer
             seats={[seat]}
-            seatNumbers={seatNumbers}
             gridDimensions={gridDimensions}
             iconConfigs={iconConfigs}
           />
@@ -427,15 +382,10 @@ describe('SeatRenderer Component', () => {
       const iconConfigs = new Map<string, IconConfig>();
       iconConfigs.set(iconConfig.id, iconConfig);
 
-      const seatNumbers = new Map<string, number>();
-      seatNumbers.set('0,0', 1);
-      seatNumbers.set('1,0', 1);
-
       const { container } = render(
         <svg>
           <SeatRenderer
             seats={[seat]}
-            seatNumbers={seatNumbers}
             gridDimensions={gridDimensions}
             iconConfigs={iconConfigs}
           />
@@ -446,10 +396,9 @@ describe('SeatRenderer Component', () => {
       const numberTexts = container.querySelectorAll('.seat-number');
       expect(numberTexts.length).toBe(2);
 
-      // Verify both numbers are "1"
-      numberTexts.forEach(text => {
-        expect(text.textContent).toBe('1');
-      });
+      // Verify both numbers are different (1 and 2)
+      const numbers = Array.from(numberTexts).map(text => text.textContent);
+      expect(numbers).toEqual(['1', '2']);
     });
   });
 
@@ -464,14 +413,10 @@ describe('SeatRenderer Component', () => {
       const iconConfigs = new Map<string, IconConfig>();
       iconConfigs.set(iconConfig.id, iconConfig);
 
-      const seatNumbers = new Map<string, number>();
-      seatNumbers.set('0,0', 1);
-
       const { container } = render(
         <svg>
           <SeatRenderer
             seats={[seat]}
-            seatNumbers={seatNumbers}
             gridDimensions={gridDimensions}
             iconConfigs={iconConfigs}
           />
@@ -494,14 +439,10 @@ describe('SeatRenderer Component', () => {
       const iconConfigs = new Map<string, IconConfig>();
       iconConfigs.set(iconConfig.id, iconConfig);
 
-      const seatNumbers = new Map<string, number>();
-      seatNumbers.set('0,0', 1);
-
       const { container } = render(
         <svg>
           <SeatRenderer
             seats={[seat]}
-            seatNumbers={seatNumbers}
             gridDimensions={gridDimensions}
             iconConfigs={iconConfigs}
           />
@@ -525,14 +466,10 @@ describe('SeatRenderer Component', () => {
       const iconConfigs = new Map<string, IconConfig>();
       iconConfigs.set(iconConfig.id, iconConfig);
 
-      const seatNumbers = new Map<string, number>();
-      seatNumbers.set('5,5', 7);
-
       const { container } = render(
         <svg>
           <SeatRenderer
             seats={[seat]}
-            seatNumbers={seatNumbers}
             gridDimensions={gridDimensions}
             iconConfigs={iconConfigs}
           />
@@ -542,7 +479,7 @@ describe('SeatRenderer Component', () => {
       const seatNumberText = container.querySelector('.seat-number');
       expect(seatNumberText).not.toBeNull();
       const textContent = seatNumberText?.textContent;
-      expect(textContent).toBe('7');
+      expect(textContent).toBe('1');
     });
 
     it('displays seat number at center of grid square for image seat', () => {
@@ -556,14 +493,10 @@ describe('SeatRenderer Component', () => {
       const iconConfigs = new Map<string, IconConfig>();
       iconConfigs.set(iconConfig.id, iconConfig);
 
-      const seatNumbers = new Map<string, number>();
-      seatNumbers.set('5,5', 7);
-
       const { container } = render(
         <svg>
           <SeatRenderer
             seats={[seat]}
-            seatNumbers={seatNumbers}
             gridDimensions={gridDimensions}
             iconConfigs={iconConfigs}
           />
@@ -573,7 +506,7 @@ describe('SeatRenderer Component', () => {
       const seatNumberText = container.querySelector('.seat-number');
       expect(seatNumberText).not.toBeNull();
       const textContent = seatNumberText?.textContent;
-      expect(textContent).toBe('7');
+      expect(textContent).toBe('1');
     });
   });
 
@@ -587,13 +520,10 @@ describe('SeatRenderer Component', () => {
       const iconConfigs = new Map<string, IconConfig>();
       // Empty map, no icon config for 'unknown-icon'
 
-      const seatNumbers = new Map<string, number>();
-
       const { container } = render(
         <svg>
           <SeatRenderer
             seats={[seat]}
-            seatNumbers={seatNumbers}
             gridDimensions={gridDimensions}
             iconConfigs={iconConfigs}
           />
@@ -622,14 +552,10 @@ describe('SeatRenderer Component', () => {
       const iconConfigs = new Map<string, IconConfig>();
       iconConfigs.set(iconConfig.id, iconConfig);
 
-      const seatNumbers = new Map<string, number>();
-      seatNumbers.set('19,19', 100);
-
       const { container } = render(
         <svg>
           <SeatRenderer
             seats={[seat]}
-            seatNumbers={seatNumbers}
             gridDimensions={gridDimensions}
             iconConfigs={iconConfigs}
           />

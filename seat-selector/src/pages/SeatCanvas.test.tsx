@@ -508,7 +508,7 @@ describe('SeatCanvas Page - Click Handler and Seat Creation (Task 13.1)', () => 
 
   describe('Seat Creation and Addition', () => {
     it('should create seat object with required properties', () => {
-      // Test that createSeat generates a seat with id, iconId, position, rotation, number
+      // Test that createSeat generates a seat with required properties
       const position = { col: 5, row: 5 };
       const seat = createSeat('chair-1', position, 'down');
       
@@ -516,7 +516,8 @@ describe('SeatCanvas Page - Click Handler and Seat Creation (Task 13.1)', () => 
       expect(seat.iconId).toBe('chair-1');
       expect(seat.position).toEqual(position);
       expect(seat.rotation).toBe('down');
-      expect(seat.number).toBe(0); // Initial number is 0, updated by numbering algorithm
+      // Seat no longer has number field - it's calculated per grid square
+      expect((seat as any).number).toBeUndefined();
     });
 
     it('should generate unique seat IDs', () => {

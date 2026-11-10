@@ -3,6 +3,29 @@ import type { IconConfig } from '../types';
 /**
  * Default icon configurations for available seat types
  * Organized by seating capacity
+ * 
+ * SVG positioning strategy (when facing DOWN):
+ * - Front/seating side at bottom (y=0.85), padding on left, right
+ * - Back of seat at top (y=0), minimal padding
+ * - Each icon fills its grid footprint with directional padding
+ * 
+ * Padding values (applied to SVG content within the viewBox):
+ * - Left/Right: 0.05 (5% of grid square) - side padding
+ * - Top (back when DOWN): 0 (no padding at back)
+ * - Bottom (front when DOWN): 0.15 (15% of grid square)
+ * - Seating area: 0 to 0.85
+ * 
+ * Size dimensions (width × height in grid squares):
+ * - Table: 2×2 grid squares (non-rotatable, always 2×2)
+ * - Chair: 1×1 grid square (non-rotatable)
+ * - Loveseat: 2×1 grid squares (horizontal when DOWN/UP, rotates to 1×2 when LEFT/RIGHT)
+ * - Couch: 3×1 grid squares (horizontal when DOWN/UP, rotates to 1×3 when LEFT/RIGHT)
+ * 
+ * SVG coordinates for each icon's viewBox (when facing DOWN):
+ * - Table: viewBox="0 0 2 2" - circle centered
+ * - Chair: viewBox="0 0 1 1" - rectangle from (0.05, 0) to (0.95, 0.85)
+ * - Loveseat: viewBox="0 0 2 1" - rectangle from (0.05, 0) to (1.95, 0.85)
+ * - Couch: viewBox="0 0 3 1" - rectangle from (0.05, 0) to (2.95, 0.85)
  */
 export const DEFAULT_ICONS: IconConfig[] = [
   {
@@ -13,7 +36,9 @@ export const DEFAULT_ICONS: IconConfig[] = [
     color: '#E8B4A2',
     visual: {
       type: 'svg',
-      content: '<circle cx="1" cy="1" r="0.8" fill="currentColor" stroke="#333" stroke-width="0.05"/>'
+      // Table: 2x2 grid squares, centered circle
+      // Centered at (1,1) with radius 0.9 to fill most of the space
+      content: '<circle cx="1" cy="1" r="0.9" fill="currentColor" stroke="#333" stroke-width="0.05"/>'
     }
   },
   {
@@ -24,7 +49,11 @@ export const DEFAULT_ICONS: IconConfig[] = [
     color: '#8B4513',
     visual: {
       type: 'svg',
-      content: '<rect x="0.2" y="0.2" width="0.6" height="0.6" fill="currentColor" stroke="#333" stroke-width="0.05" rx="0.05"/>'
+      // Chair: 1x1 grid square
+      // When facing DOWN: back at top (y=0), front seating at bottom (y=0.85)
+      // Padding on left (0.05), right (0.05), no padding at back, bottom gap (0.15)
+      // Rectangle from (0.05, 0) to (0.95, 0.85)
+      content: '<rect x="0.05" y="0" width="0.9" height="0.85" fill="currentColor" stroke="#333" stroke-width="0.04" rx="0.05"/>'
     }
   },
   {
@@ -35,7 +64,11 @@ export const DEFAULT_ICONS: IconConfig[] = [
     color: '#D2691E',
     visual: {
       type: 'svg',
-      content: '<rect x="0.1" y="0.2" width="1.8" height="0.6" fill="currentColor" stroke="#333" stroke-width="0.05" rx="0.05"/>'
+      // Loveseat: 2x1 grid squares (horizontal when facing DOWN/UP)
+      // When facing DOWN: back at top (y=0), front at bottom (y=0.85)
+      // Padding on left (0.05), right (0.05), no padding at back, bottom gap (0.15)
+      // Rectangle from (0.05, 0) to (1.95, 0.85)
+      content: '<rect x="0.05" y="0" width="1.9" height="0.85" fill="currentColor" stroke="#333" stroke-width="0.04" rx="0.05"/>'
     }
   },
   {
@@ -46,7 +79,11 @@ export const DEFAULT_ICONS: IconConfig[] = [
     color: '#A0522D',
     visual: {
       type: 'svg',
-      content: '<rect x="0.1" y="0.2" width="2.8" height="0.6" fill="currentColor" stroke="#333" stroke-width="0.05" rx="0.05"/>'
+      // Couch: 3x1 grid squares (horizontal when facing DOWN/UP)
+      // When facing DOWN: back at top (y=0), front at bottom (y=0.85)
+      // Padding on left (0.05), right (0.05), no padding at back, bottom gap (0.15)
+      // Rectangle from (0.05, 0) to (2.95, 0.85)
+      content: '<rect x="0.05" y="0" width="2.9" height="0.85" fill="currentColor" stroke="#333" stroke-width="0.04" rx="0.05"/>'
     }
   }
 ];

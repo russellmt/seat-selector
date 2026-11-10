@@ -5,58 +5,31 @@
  * The component displays where an icon will be placed when hovered, quantized to grid centers.
  *
  * **Validates: Requirements 6.1, 6.2, 6.3, 6.4, 6.5**
- *
- * Algorithm: IconPreview
- * 1. Get current hover position (already quantized to grid centers by parent)
- * 2. Calculate pixel position from grid position using gridToPixel
- * 3. Get icon config for the selected icon
- * 4. Calculate all grid squares the icon will occupy using getGridSquaresOccupied
- * 5. Render semi-transparent (50% opacity) icon at quantized position
- * 6. Use light color overlay to indicate preview
  */
 
 import React, { useMemo } from 'react';
 import type { GridPosition } from '../../types/Seat';
-import type { IconConfig } from '../../types/Icon';
+import type { IconConfig, Rotation } from '../../types/Icon';
 import type { Guest } from '../../types/Guest';
 import type { GridDimensions } from '../../utils/gridCoordinates';
 import { gridToPixel } from '../../utils/gridCoordinates';
 import { getGridSquaresOccupied } from '../../utils/collision';
+import { getRotationCompensation } from '../../utils/rotationCompensation';
+import { getRotatedSize } from '../../utils/rotationSize';
 
-/**
- * Props for the PreviewRenderer component
- */
 export interface PreviewRendererProps {
-  /** Type of preview to render: 'icon' for seat placement, 'guest' for guest assignment, or null to hide */
   type: 'icon' | 'guest' | null;
-
-  /** Grid position where preview should be displayed (null to hide) */
   position: GridPosition | null;
-
-  /** Opacity level for the preview (0-1, typically 0.5 for icon, 0.25-0.6 for guest) */
   opacity: number;
-
-  /** Currently selected icon ID (required when type is 'icon') */
   selectedIconId?: string;
-
-  /** Currently selected guest (required when type is 'guest') */
+  selectedRotation?: Rotation;
   selectedGuest?: Guest;
-
-  /** Grid dimensions and offsets */
   gridDimensions: GridDimensions;
-
-  /** Map of icon ID to IconConfig */
   iconConfigs?: Map<string, IconConfig>;
-
-  /** Whether the target position is occupied (affects guest preview opacity) */
   targetOccupied?: boolean;
 }
 
-/**
- * Helper function to get rotation angle in degrees
- * Matches the SeatRenderer rotation behavior
- */
-function getRotationAngle(rotation: 'left' | 'up' | 'right' | 'down'): number {
+function getRotationAngle(rotation: Rotation): number {
   switch (rotation) {
     case 'left':
       return 270;
@@ -70,38 +43,29 @@ function getRotationAngle(rotation: 'left' | 'up' | 'right' | 'down'): number {
   }
 }
 
-/**
- * PreviewRenderer Component
- *
- * Renders a semi-transparent preview at the hover position to show where a seat or guest
- * will be placed when clicked. Supports two preview modes:
- *
- * - Icon Preview: Shows selected icon at 50% opacity when hovering over canvas
- * - Guest Preview: Shows guest's initial circle at variable opacity (25% for empty, 60% for occupied)
- *
- * Requirements: 6.1, 6.2, 6.3, 6.4, 6.5
- */
+
+
 export const PreviewRenderer: React.FC<PreviewRendererProps> = ({
   type,
   position,
   opacity,
   selectedIconId,
+  selectedRotation,
   selectedGuest,
   gridDimensions,
   iconConfigs,
   targetOccupied,
 }) => {
-  // Hide preview if no type or position
   if (!type || !position) {
     return null;
   }
 
-  // Icon preview rendering
   if (type === 'icon' && selectedIconId && iconConfigs) {
     return (
       <IconPreview
         position={position}
         selectedIconId={selectedIconId}
+        selectedRotation={selectedRotation}
         opacity={opacity}
         gridDimensions={gridDimensions}
         iconConfigs={iconConfigs}
@@ -109,7 +73,6 @@ export const PreviewRenderer: React.FC<PreviewRendererProps> = ({
     );
   }
 
-  // Guest preview rendering
   if (type === 'guest' && selectedGuest) {
     return (
       <GuestPreview
@@ -125,17 +88,14 @@ export const PreviewRenderer: React.FC<PreviewRendererProps> = ({
   return null;
 };
 
-/**
- * IconPreview Component
- * Renders a semi-transparent icon at the hover position
- */
 const IconPreview: React.FC<{
   position: GridPosition;
   selectedIconId: string;
+  selectedRotation?: Rotation;
   opacity: number;
   gridDimensions: GridDimensions;
   iconConfigs: Map<string, IconConfig>;
-}> = ({ position, selectedIconId, opacity, gridDimensions, iconConfigs }) => {
+}> = ({ position, selectedIconId, selectedRotation = 'down', opacity, gridDimensions, iconConfigs }) => {
   const iconConfig = useMemo(
     () => iconConfigs.get(selectedIconId),
     [iconConfigs, selectedIconId],
@@ -145,47 +105,45 @@ const IconPreview: React.FC<{
     return null;
   }
 
-  // Calculate pixel position (center of the grid square)
-  const { pixelX: centerPixelX, pixelY: centerPixelY } = gridToPixel(
-    position,
-    gridDimensions,
-  );
-
-  // Calculate top-left pixel position for the icon
-  const startPixelX = centerPixelX - (iconConfig.size.width * gridDimensions.squareSize) / 2;
-  const startPixelY = centerPixelY - (iconConfig.size.height * gridDimensions.squareSize) / 2;
-
-  // Calculate width and height in pixels
   const iconWidthPixels = iconConfig.size.width * gridDimensions.squareSize;
   const iconHeightPixels = iconConfig.size.height * gridDimensions.squareSize;
 
-  // Get rotation angle for the icon (default to 'down' for preview)
-  const rotationAngle = getRotationAngle('down');
+  const gridTopLeftX = position.col * gridDimensions.squareSize + gridDimensions.offsetX;
+  const gridTopLeftY = position.row * gridDimensions.squareSize + gridDimensions.offsetY;
 
-  // Calculate transform origin (center of the icon)
-  const transformOriginX = centerPixelX;
-  const transformOriginY = centerPixelY;
+  const compensation = getRotationCompensation(iconConfig.size.width, iconConfig.size.height, selectedRotation);
+  const compensationPixelsX = compensation.offsetX * gridDimensions.squareSize;
+  const compensationPixelsY = compensation.offsetY * gridDimensions.squareSize;
+
+  const startPixelX = gridTopLeftX + compensationPixelsX;
+  const startPixelY = gridTopLeftY + compensationPixelsY;
+
+  const centerPixelX = startPixelX + iconWidthPixels / 2;
+  const centerPixelY = startPixelY + iconHeightPixels / 2;
+
+  const rotationAngle = getRotationAngle(selectedRotation);
+  const viewBoxString = `0 0 ${iconConfig.size.width} ${iconConfig.size.height}`;
+
+  const rotatedSize = getRotatedSize(iconConfig.size, selectedRotation);
 
   return (
     <g className="preview-renderer preview-icon" style={{ opacity }}>
-      {/* Render the preview icon */}
       <g
         className="preview-icon-group"
         style={{
           transform: `rotate(${rotationAngle}deg)`,
-          transformOrigin: `${transformOriginX}px ${transformOriginY}px`,
+          transformOrigin: `${centerPixelX}px ${centerPixelY}px`,
           willChange: 'transform',
         }}
       >
-        {/* SVG icon: render inline SVG content */}
         {iconConfig.visual.type === 'svg' && (
           <svg
             x={startPixelX}
             y={startPixelY}
             width={iconWidthPixels}
             height={iconHeightPixels}
-            viewBox="0 0 2.8 2.8" // Large enough to accommodate 3×1 loveseat
-            preserveAspectRatio="xMidYMid meet"
+            viewBox={viewBoxString}
+            preserveAspectRatio="none"
             className="preview-icon-svg"
             style={{
               pointerEvents: 'none',
@@ -203,7 +161,6 @@ const IconPreview: React.FC<{
           </svg>
         )}
 
-        {/* Image icon: render as SVG image element */}
         {iconConfig.visual.type === 'image' && (
           <image
             x={startPixelX}
@@ -220,10 +177,9 @@ const IconPreview: React.FC<{
         )}
       </g>
 
-      {/* Render grid square outlines for visual clarity */}
       <GridSquareOutlines
         position={position}
-        iconSize={iconConfig.size}
+        rotatedSize={rotatedSize}
         gridDimensions={gridDimensions}
         opacity={opacity}
       />
@@ -231,10 +187,6 @@ const IconPreview: React.FC<{
   );
 };
 
-/**
- * GuestPreview Component
- * Renders a semi-transparent guest circle at the hover position
- */
 const GuestPreview: React.FC<{
   position: GridPosition;
   selectedGuest: Guest;
@@ -242,19 +194,15 @@ const GuestPreview: React.FC<{
   gridDimensions: GridDimensions;
   targetOccupied?: boolean;
 }> = ({ position, selectedGuest, opacity, gridDimensions, targetOccupied }) => {
-  // Calculate pixel position (center of the grid square)
   const { pixelX: centerPixelX, pixelY: centerPixelY } = gridToPixel(
     position,
     gridDimensions,
   );
 
-  // Calculate circle radius based on grid square size
-  // Use 70% of square size as circle diameter for some padding
   const circleRadius = (gridDimensions.squareSize * 0.7) / 2;
 
   return (
     <g className="preview-renderer preview-guest" style={{ opacity }}>
-      {/* Background circle */}
       <circle
         cx={centerPixelX}
         cy={centerPixelY}
@@ -266,7 +214,6 @@ const GuestPreview: React.FC<{
         }}
       />
 
-      {/* Guest initials text */}
       <text
         x={centerPixelX}
         y={centerPixelY}
@@ -284,7 +231,6 @@ const GuestPreview: React.FC<{
         {selectedGuest.initials}
       </text>
 
-      {/* Optional outline for occupied seats */}
       {targetOccupied && (
         <circle
           cx={centerPixelX}
@@ -303,19 +249,15 @@ const GuestPreview: React.FC<{
   );
 };
 
-/**
- * Helper component to render grid square outlines for icon preview
- * Shows which grid squares the icon will occupy
- */
 const GridSquareOutlines: React.FC<{
   position: GridPosition;
-  iconSize: { width: number; height: number };
+  rotatedSize: { width: number; height: number };
   gridDimensions: GridDimensions;
   opacity: number;
-}> = ({ position, iconSize, gridDimensions, opacity }) => {
+}> = ({ position, rotatedSize, gridDimensions, opacity }) => {
   const occupiedSquares = useMemo(
-    () => getGridSquaresOccupied(position, iconSize),
-    [position, iconSize],
+    () => getGridSquaresOccupied(position, rotatedSize),
+    [position, rotatedSize],
   );
 
   return (

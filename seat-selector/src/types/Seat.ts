@@ -16,14 +16,14 @@ export interface GridPosition {
 
 /**
  * Seat represents a placed instance of an icon on the canvas
- * Each seat has a position, rotation, and implicit number based on its position
+ * Each seat has a position and rotation. Numbers are calculated per grid square
+ * based on the seat's position and capacity, not stored on the seat itself.
  */
 export interface Seat {
   id: string;              // unique identifier
   iconId: string;          // reference to the icon configuration
   position: GridPosition;  // grid coordinates where the seat is placed
   rotation: Rotation;      // rotation state (left, up, right, down)
-  number: number;          // implicit seat number (1-based, assigned by numbering algorithm)
 }
 
 /**
@@ -31,21 +31,18 @@ export interface Seat {
  * @param iconId - the icon configuration ID
  * @param position - the grid position
  * @param rotation - the rotation state (defaults to 'down')
- * @param number - the seat number (defaults to 0, will be recalculated)
  * @returns a new Seat object
  */
 export function createSeat(
   iconId: string,
   position: GridPosition,
   rotation: Rotation = 'down',
-  number: number = 0,
 ): Seat {
   return {
     id: `seat-${Math.random().toString(36).substr(2, 9)}`,
     iconId,
     position,
     rotation,
-    number,
   };
 }
 

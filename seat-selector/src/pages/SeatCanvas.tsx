@@ -56,24 +56,34 @@ export default function SeatCanvas() {
   };
 
   // Seat placement handler - creates seat at grid-quantized position
-  // Checks for collisions with existing seats
+  // Checks for collisions with existing seats (accounting for rotation)
   // Recalculates seat numbers after each placement
   const handleSeatAdd = (position: GridPosition, iconId: string, rotation: Rotation) => {
+    console.log('[SeatCanvas] handleSeatAdd called:', { position, iconId, rotation, selectedIconId });
     // Get the icon configuration to check size and validate placement
     const iconConfig = iconConfigs.get(iconId);
-    if (!iconConfig) return;
-    
-    // Check for collisions with existing seats
-    if (hasCollision(position, iconConfig.size, seats, gridDimensions, iconConfigs)) {
-      // Prevent placement if collision detected
+    console.log('[SeatCanvas] icon config found:', !!iconConfig);
+    if (!iconConfig) {
+      console.log('[SeatCanvas] No icon config found for', iconId);
       return;
     }
     
+    // Check for collisions with existing seats (rotation-aware)
+    console.log('[SeatCanvas] Checking collision at', position, 'with size', iconConfig.size, 'rotation', rotation, 'and', seats.length, 'existing seats');
+    if (hasCollision(position, iconConfig.size, seats, gridDimensions, rotation, iconConfigs)) {
+      // Prevent placement if collision detected
+      console.log('[SeatCanvas] Collision detected, aborting placement');
+      return;
+    }
+    console.log('[SeatCanvas] No collision, proceeding with seat creation');
+    
     // Create new seat with generated ID
     const newSeat = createSeat(iconId, position, rotation);
+    console.log('[SeatCanvas] Created seat:', newSeat);
     
     // Add to AppContext state
     addSeat(newSeat);
+    console.log('[SeatCanvas] Seat added to AppContext');
     
     // Recalculate seat numbering after placement
     // Note: This is called for each seat in a drag operation

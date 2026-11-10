@@ -29,6 +29,17 @@ const mockIconConfigs = new Map<string, IconConfig>([
     },
   ],
   [
+    'couch-3',
+    {
+      id: 'couch-3',
+      capacity: 3,
+      size: { width: 3, height: 1 },
+      name: 'Couch',
+      color: '#A0522D',
+      visual: { type: 'svg', content: '<rect />' },
+    },
+  ],
+  [
     'table-round-4',
     {
       id: 'table-round-4',
@@ -41,236 +52,194 @@ const mockIconConfigs = new Map<string, IconConfig>([
   ],
 ]);
 
-// Helper to get icon config for testing getSeatNumberAt and createPositionToNumberMap
-
 describe('SeatNumberingService', () => {
   describe('calculateSeatNumbers', () => {
-    it('should number empty seat array as empty', () => {
+    it('should handle empty seat array', () => {
       const seats: Seat[] = [];
       const result = SeatNumberingService.calculateSeatNumbers(seats);
       expect(result).toEqual([]);
     });
 
-    it('should number single seat as 1', () => {
+    it('should return seats unchanged (no number field)', () => {
       const seats = [createSeat('chair-1', createGridPosition(0, 0))];
       const result = SeatNumberingService.calculateSeatNumbers(seats);
 
       expect(result).toHaveLength(1);
-      expect(result[0].number).toBe(1);
-    });
-
-    it('should number left-to-right on same row', () => {
-      const seats = [
-        createSeat('chair-1', createGridPosition(2, 0)),
-        createSeat('chair-1', createGridPosition(0, 0)),
-        createSeat('chair-1', createGridPosition(1, 0)),
-      ];
-
-      const result = SeatNumberingService.calculateSeatNumbers(seats);
-      const sortedByPosition = result.sort((a, b) => a.position.col - b.position.col);
-
-      expect(sortedByPosition[0].number).toBe(1); // col 0
-      expect(sortedByPosition[1].number).toBe(2); // col 1
-      expect(sortedByPosition[2].number).toBe(3); // col 2
-    });
-
-    it('should number top-to-bottom on different rows', () => {
-      const seats = [
-        createSeat('chair-1', createGridPosition(0, 2)),
-        createSeat('chair-1', createGridPosition(0, 0)),
-        createSeat('chair-1', createGridPosition(0, 1)),
-      ];
-
-      const result = SeatNumberingService.calculateSeatNumbers(seats);
-      const sortedByPosition = result.sort((a, b) => a.position.row - b.position.row);
-
-      expect(sortedByPosition[0].number).toBe(1); // row 0
-      expect(sortedByPosition[1].number).toBe(2); // row 1
-      expect(sortedByPosition[2].number).toBe(3); // row 2
-    });
-
-    it('should number left-to-right then top-to-bottom (row priority)', () => {
-      const seats = [
-        createSeat('chair-1', createGridPosition(1, 0)), // row 0, col 1
-        createSeat('chair-1', createGridPosition(0, 1)), // row 1, col 0
-        createSeat('chair-1', createGridPosition(0, 0)), // row 0, col 0
-      ];
-
-      const result = SeatNumberingService.calculateSeatNumbers(seats);
-
-      // Find seats by position to check their numbers
-      const seat00 = result.find(s => s.position.col === 0 && s.position.row === 0);
-      const seat10 = result.find(s => s.position.col === 1 && s.position.row === 0);
-      const seat01 = result.find(s => s.position.col === 0 && s.position.row === 1);
-
-      expect(seat00!.number).toBe(1); // First (row 0, col 0)
-      expect(seat10!.number).toBe(2); // Second (row 0, col 1)
-      expect(seat01!.number).toBe(3); // Third (row 1, col 0)
-    });
-
-    it('should handle multi-grid seats (2x1 loveseat)', () => {
-      const seats = [
-        createSeat('loveseat-2', createGridPosition(0, 0)), // Occupies (0,0) and (1,0)
-        createSeat('chair-1', createGridPosition(2, 0)),
-      ];
-
-      const result = SeatNumberingService.calculateSeatNumbers(seats);
-
-      const loveseat = result.find(s => s.iconId === 'loveseat-2');
-      const chair = result.find(s => s.iconId === 'chair-1');
-
-      expect(loveseat!.number).toBe(1); // First (position row 0, col 0)
-      expect(chair!.number).toBe(2); // Second (position row 0, col 2)
-    });
-
-    it('should handle multi-grid seats (2x2 table)', () => {
-      const seats = [
-        createSeat('table-round-4', createGridPosition(0, 0)), // Occupies 4 grid squares
-        createSeat('chair-1', createGridPosition(3, 0)),
-      ];
-
-      const result = SeatNumberingService.calculateSeatNumbers(seats);
-
-      const table = result.find(s => s.iconId === 'table-round-4');
-      const chair = result.find(s => s.iconId === 'chair-1');
-
-      expect(table!.number).toBe(1); // First (position row 0, col 0)
-      expect(chair!.number).toBe(2); // Second (position row 0, col 3)
-    });
-
-    it('should renumber when seats change positions', () => {
-      let seats = [
-        createSeat('chair-1', createGridPosition(0, 0)),
-        createSeat('chair-1', createGridPosition(1, 0)),
-      ];
-
-      let result = SeatNumberingService.calculateSeatNumbers(seats);
-      const firstSeatId = result[0].id;
-      expect(result[0].number).toBe(1);
-      expect(result[1].number).toBe(2);
-
-      // Simulate moving first seat to position (2, 0)
-      seats = [
-        { ...seats[0], position: createGridPosition(2, 0) },
-        seats[1],
-      ];
-
-      result = SeatNumberingService.calculateSeatNumbers(seats);
-
-      // After renumbering, the original first seat should now be number 2
-      const movedSeat = result.find(s => s.id === firstSeatId);
-      expect(movedSeat!.number).toBe(2);
-    });
-
-    it('should handle complex grid with mixed sizes', () => {
-      const seats = [
-        createSeat('loveseat-2', createGridPosition(0, 0)), // 2x1 at (0,0)
-        createSeat('chair-1', createGridPosition(2, 0)),    // 1x1 at (2,0)
-        createSeat('chair-1', createGridPosition(0, 1)),    // 1x1 at (0,1)
-        createSeat('table-round-4', createGridPosition(2, 1)), // 2x2 at (2,1)
-      ];
-
-      const result = SeatNumberingService.calculateSeatNumbers(seats);
-
-      expect(result).toHaveLength(4);
-      expect(result.map(s => s.number)).toEqual([1, 2, 3, 4]);
-
-      // Verify positioning is correct
-      const seat1 = result.find(s => s.number === 1);
-      const seat2 = result.find(s => s.number === 2);
-      const seat3 = result.find(s => s.number === 3);
-      const seat4 = result.find(s => s.number === 4);
-
-      expect(seat1!.position).toEqual(createGridPosition(0, 0));
-      expect(seat2!.position).toEqual(createGridPosition(2, 0));
-      expect(seat3!.position).toEqual(createGridPosition(0, 1));
-      expect(seat4!.position).toEqual(createGridPosition(2, 1));
-    });
-
-    it('should preserve seat IDs and other properties during numbering', () => {
-      const originalSeat = createSeat('chair-1', createGridPosition(0, 0), 'left');
-      const seats = [originalSeat];
-
-      const result = SeatNumberingService.calculateSeatNumbers(seats);
-
-      expect(result[0].id).toBe(originalSeat.id);
-      expect(result[0].iconId).toBe(originalSeat.iconId);
-      expect(result[0].position).toEqual(originalSeat.position);
-      expect(result[0].rotation).toBe('left');
+      // Since seats no longer have numbers, verify structure is preserved
+      expect(result[0].id).toBe(seats[0].id);
+      expect(result[0].position).toEqual(seats[0].position);
     });
   });
 
-  describe('getSeatNumberAt', () => {
-    it('should return seat number for grid square occupied by 1x1 seat', () => {
-      const seats = [
-        createSeat('chair-1', createGridPosition(0, 0)),
-      ];
-      const numberedSeats = SeatNumberingService.calculateSeatNumbers(seats);
+  describe('getNumberForGridSquare', () => {
+    it('should return 1 for single chair at [0,0]', () => {
+      const seats = [createSeat('chair-1', createGridPosition(0, 0))];
 
-      const seatNumber = SeatNumberingService.getSeatNumberAt(
+      const number = SeatNumberingService.getNumberForGridSquare(
         createGridPosition(0, 0),
-        numberedSeats,
+        seats,
         mockIconConfigs,
       );
 
-      expect(seatNumber).toBe(1);
+      expect(number).toBe(1);
     });
 
-    it('should return same seat number for all grid squares in multi-grid seat', () => {
-      const seats = [
-        createSeat('table-round-4', createGridPosition(0, 0)), // 2x2 table
-      ];
-      const numberedSeats = SeatNumberingService.calculateSeatNumbers(seats);
+    it('should return undefined for all table grid squares (capacity 0)', () => {
+      const seats = [createSeat('table-round-4', createGridPosition(0, 0))];
 
-      // Test all 4 grid squares
-      expect(SeatNumberingService.getSeatNumberAt(createGridPosition(0, 0), numberedSeats, mockIconConfigs)).toBe(1);
-      expect(SeatNumberingService.getSeatNumberAt(createGridPosition(1, 0), numberedSeats, mockIconConfigs)).toBe(1);
-      expect(SeatNumberingService.getSeatNumberAt(createGridPosition(0, 1), numberedSeats, mockIconConfigs)).toBe(1);
-      expect(SeatNumberingService.getSeatNumberAt(createGridPosition(1, 1), numberedSeats, mockIconConfigs)).toBe(1);
+      // Table has capacity 0, so all grid squares should return undefined
+      expect(
+        SeatNumberingService.getNumberForGridSquare(
+          createGridPosition(0, 0),
+          seats,
+          mockIconConfigs,
+        ),
+      ).toBeUndefined();
+      expect(
+        SeatNumberingService.getNumberForGridSquare(
+          createGridPosition(1, 0),
+          seats,
+          mockIconConfigs,
+        ),
+      ).toBeUndefined();
+      expect(
+        SeatNumberingService.getNumberForGridSquare(
+          createGridPosition(0, 1),
+          seats,
+          mockIconConfigs,
+        ),
+      ).toBeUndefined();
+      expect(
+        SeatNumberingService.getNumberForGridSquare(
+          createGridPosition(1, 1),
+          seats,
+          mockIconConfigs,
+        ),
+      ).toBeUndefined();
+    });
+
+    it('should return different numbers for loveseat grid squares', () => {
+      const seats = [createSeat('loveseat-2', createGridPosition(0, 0))];
+
+      // Loveseat is 2x1 (two grid squares horizontally)
+      expect(
+        SeatNumberingService.getNumberForGridSquare(
+          createGridPosition(0, 0),
+          seats,
+          mockIconConfigs,
+        ),
+      ).toBe(1);
+      expect(
+        SeatNumberingService.getNumberForGridSquare(
+          createGridPosition(1, 0),
+          seats,
+          mockIconConfigs,
+        ),
+      ).toBe(2);
+    });
+
+    it('should return different numbers for couch grid squares', () => {
+      const seats = [createSeat('couch-3', createGridPosition(0, 0))];
+
+      // Couch is 3x1 (three grid squares horizontally)
+      expect(
+        SeatNumberingService.getNumberForGridSquare(
+          createGridPosition(0, 0),
+          seats,
+          mockIconConfigs,
+        ),
+      ).toBe(1);
+      expect(
+        SeatNumberingService.getNumberForGridSquare(
+          createGridPosition(1, 0),
+          seats,
+          mockIconConfigs,
+        ),
+      ).toBe(2);
+      expect(
+        SeatNumberingService.getNumberForGridSquare(
+          createGridPosition(2, 0),
+          seats,
+          mockIconConfigs,
+        ),
+      ).toBe(3);
     });
 
     it('should return undefined for unoccupied grid square', () => {
-      const seats = [
-        createSeat('chair-1', createGridPosition(0, 0)),
-      ];
-      const numberedSeats = SeatNumberingService.calculateSeatNumbers(seats);
+      const seats = [createSeat('chair-1', createGridPosition(0, 0))];
 
-      const seatNumber = SeatNumberingService.getSeatNumberAt(
+      const number = SeatNumberingService.getNumberForGridSquare(
         createGridPosition(5, 5),
-        numberedSeats,
+        seats,
         mockIconConfigs,
       );
 
-      expect(seatNumber).toBeUndefined();
+      expect(number).toBeUndefined();
+    });
+
+    it('should skip table when finding number for grid square', () => {
+      const seats = [
+        createSeat('table-round-4', createGridPosition(0, 0)), // capacity 0
+        createSeat('chair-1', createGridPosition(2, 0)), // capacity 1
+      ];
+
+      // Table squares should return undefined
+      expect(
+        SeatNumberingService.getNumberForGridSquare(
+          createGridPosition(0, 0),
+          seats,
+          mockIconConfigs,
+        ),
+      ).toBeUndefined();
+
+      // Chair square should return 1
+      expect(
+        SeatNumberingService.getNumberForGridSquare(
+          createGridPosition(2, 0),
+          seats,
+          mockIconConfigs,
+        ),
+      ).toBe(1);
     });
   });
 
   describe('createPositionToNumberMap', () => {
-    it('should create map with single seat', () => {
-      const seats = [
-        createSeat('chair-1', createGridPosition(0, 0)),
-      ];
-      const numberedSeats = SeatNumberingService.calculateSeatNumbers(seats);
+    it('should create map with single chair', () => {
+      const seats = [createSeat('chair-1', createGridPosition(0, 0))];
 
-      const map = SeatNumberingService.createPositionToNumberMap(numberedSeats, mockIconConfigs);
+      const map = SeatNumberingService.createPositionToNumberMap(seats, mockIconConfigs);
 
       expect(map.get('0,0')).toBe(1);
       expect(map.size).toBe(1);
     });
 
-    it('should create map with multi-grid seat covering all squares', () => {
-      const seats = [
-        createSeat('table-round-4', createGridPosition(0, 0)),
-      ];
-      const numberedSeats = SeatNumberingService.calculateSeatNumbers(seats);
+    it('should create map with loveseat showing different numbers', () => {
+      const seats = [createSeat('loveseat-2', createGridPosition(0, 0))];
 
-      const map = SeatNumberingService.createPositionToNumberMap(numberedSeats, mockIconConfigs);
+      const map = SeatNumberingService.createPositionToNumberMap(seats, mockIconConfigs);
 
       expect(map.get('0,0')).toBe(1);
-      expect(map.get('1,0')).toBe(1);
-      expect(map.get('0,1')).toBe(1);
-      expect(map.get('1,1')).toBe(1);
-      expect(map.size).toBe(4);
+      expect(map.get('1,0')).toBe(2);
+      expect(map.size).toBe(2);
+    });
+
+    it('should create map with couch showing different numbers', () => {
+      const seats = [createSeat('couch-3', createGridPosition(0, 0))];
+
+      const map = SeatNumberingService.createPositionToNumberMap(seats, mockIconConfigs);
+
+      expect(map.get('0,0')).toBe(1);
+      expect(map.get('1,0')).toBe(2);
+      expect(map.get('2,0')).toBe(3);
+      expect(map.size).toBe(3);
+    });
+
+    it('should exclude table from map', () => {
+      const seats = [createSeat('table-round-4', createGridPosition(0, 0))];
+
+      const map = SeatNumberingService.createPositionToNumberMap(seats, mockIconConfigs);
+
+      expect(map.size).toBe(0); // Table has capacity 0, so no numbers
     });
 
     it('should create map with multiple seats', () => {
@@ -278,42 +247,43 @@ describe('SeatNumberingService', () => {
         createSeat('chair-1', createGridPosition(0, 0)),
         createSeat('loveseat-2', createGridPosition(1, 0)),
       ];
-      const numberedSeats = SeatNumberingService.calculateSeatNumbers(seats);
 
-      const map = SeatNumberingService.createPositionToNumberMap(numberedSeats, mockIconConfigs);
+      const map = SeatNumberingService.createPositionToNumberMap(seats, mockIconConfigs);
 
+      expect(map.get('0,0')).toBe(1); // Chair = 1
+      expect(map.get('1,0')).toBe(2); // Loveseat first position = 2 (global numbering)
+      expect(map.get('2,0')).toBe(3); // Loveseat second position = 3 (global numbering)
+      expect(map.size).toBe(3);
+    });
+
+    it('should create map excluding tables', () => {
+      const seats = [
+        createSeat('chair-1', createGridPosition(0, 0)),
+        createSeat('table-round-4', createGridPosition(2, 0)),
+        createSeat('loveseat-2', createGridPosition(4, 0)),
+      ];
+
+      const map = SeatNumberingService.createPositionToNumberMap(seats, mockIconConfigs);
+
+      // Chair at [0,0] = 1
+      // Table at [2,0] and [3,0] = not in map (capacity 0)
+      // Loveseat at [4,0] and [5,0] = 2 and 3 (global numbering continues from chair)
       expect(map.get('0,0')).toBe(1);
-      expect(map.get('1,0')).toBe(2);
-      expect(map.get('2,0')).toBe(2);
-      expect(map.size).toBe(3); // 1 square + 2 squares
+      expect(map.get('2,0')).toBeUndefined();
+      expect(map.get('3,0')).toBeUndefined();
+      expect(map.get('4,0')).toBe(2);
+      expect(map.get('5,0')).toBe(3);
+      expect(map.size).toBe(3); // 1 chair + 2 loveseat = 3 total
     });
   });
 
   describe('renumberSeat', () => {
-    it('should renumber a specific seat in context of all seats', () => {
-      const seats = [
-        createSeat('chair-1', createGridPosition(0, 0)),
-        createSeat('chair-1', createGridPosition(1, 0)),
-      ];
+    it('should return seat unchanged', () => {
+      const seat = createSeat('chair-1', createGridPosition(0, 0));
 
-      const seatToUpdate = seats[0];
-      const updated = SeatNumberingService.renumberSeat(seatToUpdate, seats);
+      const updated = SeatNumberingService.renumberSeat(seat);
 
-      expect(updated.number).toBe(1);
-    });
-
-    it('should return the seat with new number when position changes', () => {
-      let seats = [
-        createSeat('chair-1', createGridPosition(0, 0)),
-        createSeat('chair-1', createGridPosition(1, 0)),
-      ];
-
-      const seatToUpdate = { ...seats[0], position: createGridPosition(2, 0) };
-      seats = [seatToUpdate, seats[1]];
-
-      const updated = SeatNumberingService.renumberSeat(seatToUpdate, seats);
-
-      expect(updated.number).toBe(2);
+      expect(updated).toBe(seat);
     });
   });
 });
