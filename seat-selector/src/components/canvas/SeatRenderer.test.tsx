@@ -297,7 +297,7 @@ describe('SeatRenderer Component', () => {
       });
       const iconConfig = createMockImageIconConfig({
         id: 'table-img',
-        url: 'https://cdn.example.com/icons/table.png',
+        visual: { type: 'image', url: 'https://cdn.example.com/icons/table.png' },
         size: { width: 2, height: 2 },
       });
       const gridDimensions = createMockGridDimensions();

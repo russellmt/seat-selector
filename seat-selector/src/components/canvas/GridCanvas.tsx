@@ -7,14 +7,16 @@
  * **Validates: Requirements 2.1, 2.2, 2.3**
  */
 
-import React, { useRef, useEffect, useState, useCallback } from 'react';
+import React, { useRef, useState, useCallback } from 'react';
 import type { GridPosition, Seat, Rotation } from '../../types';
 import type { IconConfig } from '../../types/Icon';
 import type { Guest } from '../../types/Guest';
-import type { GuestAssignmentMap } from '../../types/Guest';
 import { pixelToGrid } from '../../utils/gridCoordinates';
 import type { GridDimensions } from '../../utils/gridCoordinates';
 import type { DragState } from '../../types/UIState';
+import { GridRenderer } from './GridRenderer';
+import { SeatRenderer } from './SeatRenderer';
+import { PreviewRenderer } from './PreviewRenderer';
 import './GridCanvas.css';
 
 /**
@@ -32,9 +34,6 @@ export interface GridCanvasProps {
 
   /** Currently selected guest ID (optional, for guest arrangement mode) */
   selectedGuestId?: string | null;
-
-  /** Map of seat number to guest ID (optional, for guest arrangement mode) */
-  assignments?: GuestAssignmentMap;
 
   /** Array of guests (optional, for guest arrangement mode) */
   guests?: Guest[];
@@ -93,7 +92,6 @@ export const GridCanvas: React.FC<GridCanvasProps> = ({
   selectedIconId,
   selectedRotation,
   selectedGuestId,
-  assignments,
   guests,
   onSeatAdd,
   onSeatRemove,
@@ -336,7 +334,27 @@ export const GridCanvas: React.FC<GridCanvasProps> = ({
       onMouseLeave={handleMouseLeave}
       onContextMenu={handleContextMenu}
     >
-      {/* SVG content will be rendered by child components */}
+      {/* Grid background with lines */}
+      <GridRenderer gridDimensions={gridDimensions} />
+
+      {/* Rendered seats with numbers */}
+      <SeatRenderer
+        seats={seats}
+        seatNumbers={new Map()}
+        gridDimensions={gridDimensions}
+        iconConfigs={iconConfigs}
+      />
+
+      {/* Hover preview (icon or guest) */}
+      <PreviewRenderer
+        type={state.previewType}
+        position={state.hoverPosition}
+        opacity={state.previewOpacity}
+        selectedIconId={selectedIconId}
+        selectedGuest={undefined}
+        gridDimensions={gridDimensions}
+        iconConfigs={iconConfigs}
+      />
     </svg>
   );
 };
