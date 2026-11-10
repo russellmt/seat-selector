@@ -117,7 +117,7 @@ describe('Property-Based Tests: Seat Placement', () => {
       (col, row, iconId, rotation) => {
       // Create a seat at the specified position
       const position = createGridPosition(col, row);
-      const seat = createSeat(iconId, position, rotation as any, 1);
+      const seat = createSeat(iconId, position, rotation as any);
 
       // ====================================================================
       // Requirement 7.1: Seat exists at quantized grid position
@@ -143,16 +143,15 @@ describe('Property-Based Tests: Seat Placement', () => {
       expect(seat.id).toBeDefined();
       expect(seat.id.length).toBeGreaterThan(0);
 
-      // Verify seat has a number (even if 0 initially)
-      expect(typeof seat.number).toBe('number');
-      expect(seat.number).toBeGreaterThanOrEqual(0);
+      // Seat no longer has number field - it's calculated per grid square
+
 
       // Additional verification: seat data structure is complete
       expect(seat).toHaveProperty('id');
       expect(seat).toHaveProperty('iconId');
       expect(seat).toHaveProperty('position');
       expect(seat).toHaveProperty('rotation');
-      expect(seat).toHaveProperty('number');
+      // Note: 'number' is no longer a property - it's calculated per grid square
     });
 
     // Run property test with 100 iterations
@@ -195,7 +194,11 @@ describe('Property-Based Tests: Seat Placement', () => {
       if (!iconConfig) return;
 
       const position = createGridPosition(col, row);
-      const seat = createSeat(iconId, position, 'down', 1);
+      const seat = createSeat(iconId, position, 'down');
+
+      // Verify seat was created correctly
+      expect(seat).toBeDefined();
+      expect(seat.iconId).toBe(iconId);
 
       // ====================================================================
       // Requirement 11.1: 0-person table occupies 2×2 grid squares
@@ -311,7 +314,7 @@ describe('Property-Based Tests: Seat Placement', () => {
         if (hasOverlap) continue;
 
         // Create and add seat
-        const seat = createSeat(iconId, position, 'down', seats.length + 1);
+        const seat = createSeat(iconId, position, 'down');
         seats.push(seat);
 
         // Mark as occupied
@@ -371,7 +374,7 @@ describe('Property-Based Tests: Seat Placement', () => {
       ), // Use small icons at boundaries
       (col, row, iconId) => {
       const position = createGridPosition(col, row);
-      const seat = createSeat(iconId, position, 'down', 1);
+      const seat = createSeat(iconId, position, 'down');
 
       // Verify seat exists at boundary
       expect(seat.position.col).toBe(col);
@@ -405,7 +408,7 @@ describe('Property-Based Tests: Seat Placement', () => {
       fc.oneof(...Array.from(iconConfigs.keys()).map(id => fc.constant(id))),
       (col, row, iconId) => {
       const position = createGridPosition(col, row);
-      const seat = createSeat(iconId, position, 'down', 1);
+      const seat = createSeat(iconId, position, 'down');
 
       // Verify seat exists at center region
       expect(seat.position.col).toBe(col);
@@ -439,7 +442,7 @@ describe('Property-Based Tests: Seat Placement', () => {
       ),
       (iconId, col, row, rotation) => {
       const position = createGridPosition(col, row);
-      const seat = createSeat(iconId, position, rotation as any, 1);
+      const seat = createSeat(iconId, position, rotation as any);
 
       const iconConfig = iconConfigs.get(iconId);
       expect(iconConfig).toBeDefined();

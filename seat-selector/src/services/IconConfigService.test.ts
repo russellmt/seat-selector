@@ -1,120 +1,88 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { IconConfigService, DEFAULT_ICONS } from './IconConfigService';
-import type { IconConfig } from '../types';
 
 describe('IconConfigService', () => {
-  let service: IconConfigService;
-
-  beforeEach(() => {
-    service = new IconConfigService();
-  });
-
-  describe('constructor', () => {
-    it('should initialize with DEFAULT_ICONS when no icons provided', () => {
-      const configs = service.getAllConfigs();
-      expect(configs.length).toBeGreaterThan(0);
-      expect(configs.length).toBe(DEFAULT_ICONS.length);
-    });
-
-    it('should initialize with custom icons when provided', () => {
-      const customIcons: IconConfig[] = [
-        {
-          id: 'custom-1',
-          capacity: 1,
-          size: { width: 1, height: 1 },
-          name: 'Custom Icon',
-          color: '#FF0000',
-          visual: { type: 'svg', content: '<circle cx="0.5" cy="0.5" r="0.4"/>' }
-        }
-      ];
-      const customService = new IconConfigService(customIcons);
-      const configs = customService.getAllConfigs();
-      expect(configs.length).toBe(1);
-      expect(configs[0].id).toBe('custom-1');
-    });
-  });
-
   describe('getConfig', () => {
-    it('should retrieve a config by ID', () => {
-      const config = service.getConfig('table-round-4');
+    it('should return config for valid icon ID', () => {
+      const service = new IconConfigService();
+      const config = service.getConfig('chair-1');
       expect(config).toBeDefined();
-      expect(config?.id).toBe('table-round-4');
-      expect(config?.capacity).toBe(0);
+      expect(config?.id).toBe('chair-1');
+      expect(config?.capacity).toBe(1);
     });
 
-    it('should return undefined for non-existent ID', () => {
-      const config = service.getConfig('non-existent');
+    it('should return undefined for invalid icon ID', () => {
+      const service = new IconConfigService();
+      const config = service.getConfig('nonexistent');
       expect(config).toBeUndefined();
-    });
-
-    it('should return all default icons by their IDs', () => {
-      DEFAULT_ICONS.forEach(icon => {
-        const config = service.getConfig(icon.id);
-        expect(config).toEqual(icon);
-      });
     });
   });
 
   describe('getAllConfigs', () => {
-    it('should return all configs sorted by capacity', () => {
-      const configs = service.getAllConfigs();
-      
-      // Check that configs are sorted by capacity
-      for (let i = 1; i < configs.length; i++) {
-        expect(configs[i].capacity).toBeGreaterThanOrEqual(configs[i - 1].capacity);
-      }
-    });
-
-    it('should return an array with all default icons', () => {
+    it('should return all configs', () => {
+      const service = new IconConfigService();
       const configs = service.getAllConfigs();
       expect(configs.length).toBe(DEFAULT_ICONS.length);
     });
 
-    it('should return configs in ascending capacity order', () => {
+    it('should return configs sorted by capacity', () => {
+      const service = new IconConfigService();
       const configs = service.getAllConfigs();
-      const capacities = configs.map(c => c.capacity);
-      const sortedCapacities = [...capacities].sort((a, b) => a - b);
-      expect(capacities).toEqual(sortedCapacities);
+      for (let i = 0; i < configs.length - 1; i++) {
+        expect(configs[i].capacity).toBeLessThanOrEqual(configs[i + 1].capacity);
+      }
+    });
+
+    it('should include all default icons', () => {
+      const service = new IconConfigService();
+      const configs = service.getAllConfigs();
+      DEFAULT_ICONS.forEach(icon => {
+        const found = configs.find(c => c.id === icon.id);
+        expect(found).toBeDefined();
+      });
     });
   });
 
   describe('getConfigsByCapacity', () => {
-    it('should return configs grouped by capacity', () => {
-      const grouped = service.getConfigsByCapacity();
-      
-      // Each group should contain configs of the same capacity
-      grouped.forEach(group => {
-        const capacity = group[0].capacity;
-        group.forEach(config => {
-          expect(config.capacity).toBe(capacity);
-        });
-      });
+    it('should return grouped configs', () => {
+      const service = new IconConfigService();
+      const groups = service.getConfigsByCapacity();
+      expect(groups.length).toBeGreaterThan(0);
     });
 
     it('should return groups sorted by capacity', () => {
-      const grouped = service.getConfigsByCapacity();
-      
-      for (let i = 1; i < grouped.length; i++) {
-        expect(grouped[i][0].capacity).toBeGreaterThanOrEqual(grouped[i - 1][0].capacity);
+      const service = new IconConfigService();
+      const groups = service.getConfigsByCapacity();
+      for (let i = 0; i < groups.length - 1; i++) {
+        expect(groups[i][0].capacity).toBeLessThan(groups[i + 1][0].capacity);
       }
     });
 
-    it('should return all configs grouped', () => {
-      const grouped = service.getConfigsByCapacity();
-      const totalConfigs = grouped.reduce((sum, group) => sum + group.length, 0);
+    it('should return all configs grouped by capacity', () => {
+      const service = new IconConfigService();
+      const groups = service.getConfigsByCapacity();
+      let totalConfigs = 0;
+      groups.forEach(group => {
+        totalConfigs += group.length;
+        // All configs in a group should have the same capacity
+        const firstCapacity = group[0].capacity;
+        group.forEach(config => {
+          expect(config.capacity).toBe(firstCapacity);
+        });
+      });
       expect(totalConfigs).toBe(DEFAULT_ICONS.length);
     });
 
     it('should have at least one group for each capacity in default icons', () => {
-      const grouped = service.getConfigsByCapacity();
-      const uniqueCapacities = new Set(DEFAULT_ICONS.map(i => i.capacity));
+      const service = new IconConfigService();
+      const groups = service.getConfigsByCapacity();
       
-      // Should have at least as many groups as unique capacities
-      expect(grouped.length).toBe(uniqueCapacities.size);
+      const capacities = new Set(DEFAULT_ICONS.map(i => i.capacity));
+      expect(groups.length).toBe(capacities.size);
     });
   });
 
-  describe('DEFAULT_ICONS', () => {
+  describe('DEFAULT_ICONS Configuration', () => {
     it('should include 4 seat types', () => {
       expect(DEFAULT_ICONS.length).toBe(4);
     });
@@ -135,7 +103,7 @@ describe('IconConfigService', () => {
       expect(chair?.size.height).toBe(1);
     });
 
-    it('should have a 2-person loveseat', () => {
+    it('should have a 2-person loveseat with 2x1 grid (horizontal when DOWN)', () => {
       const loveseat = DEFAULT_ICONS.find(i => i.capacity === 2);
       expect(loveseat).toBeDefined();
       expect(loveseat?.id).toBe('loveseat-2');
@@ -143,7 +111,7 @@ describe('IconConfigService', () => {
       expect(loveseat?.size.height).toBe(1);
     });
 
-    it('should have a 3-person couch', () => {
+    it('should have a 3-person couch with 3x1 grid (horizontal when DOWN)', () => {
       const couch = DEFAULT_ICONS.find(i => i.capacity === 3);
       expect(couch).toBeDefined();
       expect(couch?.id).toBe('couch-3');

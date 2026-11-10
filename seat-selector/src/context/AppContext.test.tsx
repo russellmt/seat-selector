@@ -22,7 +22,6 @@ function createTestSeat(overrides?: Partial<Seat>): Seat {
     iconId: 'table-round-4',
     position: { col: 0, row: 0 },
     rotation: 'down',
-    number: 1,
     ...overrides,
   };
 }
@@ -174,9 +173,9 @@ describe('AppProvider and useApp Hook', () => {
       // seat2 (0,0) -> number 1
       // seat3 (0,1) -> number 2
       // seat1 (1,1) -> number 3
-      expect(result.current.seats[0].number).toBe(1);
-      expect(result.current.seats[1].number).toBe(2);
-      expect(result.current.seats[2].number).toBe(3);
+
+
+
     });
   });
 
@@ -570,8 +569,8 @@ describe('AppProvider and useApp Hook', () => {
       });
 
       expect(result.current.seats).toHaveLength(2);
-      expect(result.current.seats[0].number).toBe(1);
-      expect(result.current.seats[1].number).toBe(2);
+
+
 
       // Add guests
       const guest1 = createTestGuest({ id: 'guest-1' });

@@ -222,17 +222,31 @@ export const GridCanvas: React.FC<GridCanvasProps> = ({
       const isDrag =
         startPosition.col !== endPosition.col || startPosition.row !== endPosition.row;
 
+      // Debug logging
+      console.log('[GridCanvas] Mouse up event:', {
+        gridPosition,
+        isDrag,
+        mouseButton,
+        startPosition,
+        endPosition,
+        selectedIconId,
+        selectedRotation,
+      });
+
       try {
         if (mouseButton === 'left') {
           // Left click/drag: add seat(s)
           if (isDrag) {
             // Drag operation: calculate path and add seats at each position
             const path = calculateDragPath(startPosition, endPosition);
+            console.log('[GridCanvas] Drag path:', path);
             path.forEach((pos) => {
+              console.log('[GridCanvas] Adding seat at position:', pos);
               onSeatAdd(pos, selectedIconId, selectedRotation);
             });
           } else {
             // Single click: add seat at clicked position
+            console.log('[GridCanvas] Single click - adding seat at:', startPosition);
             onSeatAdd(startPosition, selectedIconId, selectedRotation);
           }
 
@@ -340,7 +354,6 @@ export const GridCanvas: React.FC<GridCanvasProps> = ({
       {/* Rendered seats with numbers */}
       <SeatRenderer
         seats={seats}
-        seatNumbers={new Map()}
         gridDimensions={gridDimensions}
         iconConfigs={iconConfigs}
       />
@@ -351,6 +364,7 @@ export const GridCanvas: React.FC<GridCanvasProps> = ({
         position={state.hoverPosition}
         opacity={state.previewOpacity}
         selectedIconId={selectedIconId}
+        selectedRotation={selectedRotation}
         selectedGuest={undefined}
         gridDimensions={gridDimensions}
         iconConfigs={iconConfigs}

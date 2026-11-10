@@ -51,7 +51,7 @@ describe('Collision Detection and Path Calculation', () => {
       ]);
     });
 
-    it('should return 2 squares for 2x1 seat (loveseat)', () => {
+    it('should return 2 squares for 2x1 seat (loveseat horizontal when DOWN)', () => {
       const position = createGridPosition(3, 7);
       const occupied = getGridSquaresOccupied(position, loveseat2x1);
 
@@ -187,7 +187,7 @@ describe('Collision Detection and Path Calculation', () => {
 
     it('should find single seat at path position', () => {
       const path = [createGridPosition(5, 5)];
-      const seat = createSeat('chair', createGridPosition(5, 5), 'down', 1);
+      const seat = createSeat('chair', createGridPosition(5, 5), 'down');
       const existingSeats = [seat];
       const iconConfigs = new Map<string, IconConfig>([
         [
@@ -215,7 +215,7 @@ describe('Collision Detection and Path Calculation', () => {
         createGridPosition(6, 5),
         createGridPosition(7, 5),
       ];
-      const seat = createSeat('table', createGridPosition(5, 5), 'down', 1);
+      const seat = createSeat('table', createGridPosition(5, 5), 'down');
       const existingSeats = [seat];
       const iconConfigs = new Map<string, IconConfig>([
         [
@@ -245,7 +245,7 @@ describe('Collision Detection and Path Calculation', () => {
         createGridPosition(5, 6),
         createGridPosition(6, 6),
       ];
-      const seat = createSeat('table', createGridPosition(5, 5), 'down', 1);
+      const seat = createSeat('table', createGridPosition(5, 5), 'down');
       const existingSeats = [seat];
       const iconConfigs = new Map<string, IconConfig>([
         [
@@ -273,9 +273,9 @@ describe('Collision Detection and Path Calculation', () => {
         createGridPosition(5, 5),
         createGridPosition(10, 10),
       ];
-      const seat1 = createSeat('chair', createGridPosition(0, 0), 'down', 1);
-      const seat2 = createSeat('chair', createGridPosition(5, 5), 'down', 2);
-      const seat3 = createSeat('chair', createGridPosition(10, 10), 'down', 3);
+      const seat1 = createSeat('chair', createGridPosition(0, 0), 'down');
+      const seat2 = createSeat('chair', createGridPosition(5, 5), 'down');
+      const seat3 = createSeat('chair', createGridPosition(10, 10), 'down');
       const existingSeats = [seat1, seat2, seat3];
       const iconConfigs = new Map<string, IconConfig>([
         [
@@ -303,7 +303,7 @@ describe('Collision Detection and Path Calculation', () => {
   describe('positionOverlapsSeat', () => {
     it('should detect overlap with 1x1 seat', () => {
       const position = createGridPosition(5, 5);
-      const seat = createSeat('chair', createGridPosition(5, 5), 'down', 1);
+      const seat = createSeat('chair', createGridPosition(5, 5), 'down');
 
       const overlaps = positionOverlapsSeat(position, seat, chair1x1);
 
@@ -312,7 +312,7 @@ describe('Collision Detection and Path Calculation', () => {
 
     it('should not detect overlap outside 1x1 seat', () => {
       const position = createGridPosition(5, 5);
-      const seat = createSeat('chair', createGridPosition(6, 6), 'down', 1);
+      const seat = createSeat('chair', createGridPosition(6, 5), 'down');
 
       const overlaps = positionOverlapsSeat(position, seat, chair1x1);
 
@@ -321,7 +321,7 @@ describe('Collision Detection and Path Calculation', () => {
 
     it('should detect overlap with 2x2 table at corner', () => {
       const position = createGridPosition(6, 6);
-      const seat = createSeat('table', createGridPosition(5, 5), 'down', 1);
+      const seat = createSeat('table', createGridPosition(5, 5), 'down');
 
       const overlaps = positionOverlapsSeat(position, seat, table2x2);
 
@@ -330,7 +330,7 @@ describe('Collision Detection and Path Calculation', () => {
 
     it('should not detect overlap outside 2x2 table', () => {
       const position = createGridPosition(7, 7);
-      const seat = createSeat('table', createGridPosition(5, 5), 'down', 1);
+      const seat = createSeat('table', createGridPosition(5, 5), 'down');
 
       const overlaps = positionOverlapsSeat(position, seat, table2x2);
 
@@ -338,7 +338,7 @@ describe('Collision Detection and Path Calculation', () => {
     });
 
     it('should detect overlap with loveseat at any occupied square', () => {
-      const seat = createSeat('loveseat', createGridPosition(5, 5), 'down', 1);
+      const seat = createSeat('loveseat', createGridPosition(5, 5), 'down');
 
       const overlap1 = positionOverlapsSeat(
         createGridPosition(5, 5),
@@ -383,7 +383,6 @@ describe('Collision Detection and Path Calculation', () => {
         'chair',
         createGridPosition(5, 5),
         'down',
-        1,
       );
       const existingSeats = [existingSeat];
 
@@ -403,7 +402,6 @@ describe('Collision Detection and Path Calculation', () => {
         'chair',
         createGridPosition(10, 10),
         'down',
-        1,
       );
       const existingSeats = [existingSeat];
 
@@ -419,7 +417,7 @@ describe('Collision Detection and Path Calculation', () => {
 
     it('should detect collision with 2x2 table partially overlapping', () => {
       const position = createGridPosition(5, 5);
-      const existingSeat = createSeat('table', createGridPosition(4, 4), 'down', 1);
+      const existingSeat = createSeat('table', createGridPosition(4, 4), 'down');
       const existingSeats = [existingSeat];
       const iconConfigs = new Map<string, IconConfig>([
         [
@@ -440,6 +438,7 @@ describe('Collision Detection and Path Calculation', () => {
         table2x2,
         existingSeats,
         defaultGridDimensions,
+        'down',
         iconConfigs,
       );
 
@@ -490,9 +489,9 @@ describe('Collision Detection and Path Calculation', () => {
 
     it('should detect collision with multiple existing seats', () => {
       const position = createGridPosition(5, 5);
-      const seat1 = createSeat('chair', createGridPosition(0, 0), 'down', 1);
-      const seat2 = createSeat('chair', createGridPosition(5, 5), 'down', 2);
-      const seat3 = createSeat('chair', createGridPosition(15, 15), 'down', 3);
+      const seat1 = createSeat('chair', createGridPosition(0, 0), 'down');
+      const seat2 = createSeat('chair', createGridPosition(5, 5), 'down');
+      const seat3 = createSeat('chair', createGridPosition(15, 15), 'down');
       const existingSeats = [seat1, seat2, seat3];
 
       const collision = hasCollision(
@@ -508,14 +507,15 @@ describe('Collision Detection and Path Calculation', () => {
 
   describe('Integration Tests: Path Calculation and Seat Finding', () => {
     it('should find all seats in horizontal drag path', () => {
-      const start = createGridPosition(0, 5);
-      const end = createGridPosition(5, 5);
-      const path = calculateDragPath(start, end);
+      const dragStart = createGridPosition(0, 0);
+      const dragEnd = createGridPosition(10, 0);
+      const path = calculateDragPath(dragStart, dragEnd);
 
-      const seat1 = createSeat('chair', createGridPosition(1, 5), 'down', 1);
-      const seat2 = createSeat('chair', createGridPosition(3, 5), 'down', 2);
-      const seat3 = createSeat('chair', createGridPosition(10, 5), 'down', 3);
+      const seat1 = createSeat('chair', createGridPosition(3, 0), 'down');
+      const seat2 = createSeat('chair', createGridPosition(7, 0), 'down');
+      const seat3 = createSeat('chair', createGridPosition(0, 5), 'down');
       const existingSeats = [seat1, seat2, seat3];
+
       const iconConfigs = new Map<string, IconConfig>([
         [
           'chair',
@@ -530,20 +530,21 @@ describe('Collision Detection and Path Calculation', () => {
         ],
       ]);
 
-      const seats = findSeatsInPath(path, existingSeats, iconConfigs);
+      const seatsInPath = findSeatsInPath(path, existingSeats, iconConfigs);
 
-      expect(seats).toHaveLength(2);
-      expect(seats.map((s) => s.id)).toContain(seat1.id);
-      expect(seats.map((s) => s.id)).toContain(seat2.id);
+      expect(seatsInPath).toHaveLength(2);
+      expect(seatsInPath.map((s) => s.id)).toContain(seat1.id);
+      expect(seatsInPath.map((s) => s.id)).toContain(seat2.id);
     });
 
     it('should find multi-grid seats along diagonal path', () => {
-      const start = createGridPosition(0, 0);
-      const end = createGridPosition(4, 4);
-      const path = calculateDragPath(start, end);
+      const dragStart = createGridPosition(0, 0);
+      const dragEnd = createGridPosition(10, 10);
+      const path = calculateDragPath(dragStart, dragEnd);
 
-      const table = createSeat('table', createGridPosition(2, 2), 'down', 1);
-      const existingSeats = [table];
+      const seat1 = createSeat('table', createGridPosition(5, 5), 'down');
+      const existingSeats = [seat1];
+
       const iconConfigs = new Map<string, IconConfig>([
         [
           'table',
@@ -558,10 +559,10 @@ describe('Collision Detection and Path Calculation', () => {
         ],
       ]);
 
-      const seats = findSeatsInPath(path, existingSeats, iconConfigs);
+      const seatsInPath = findSeatsInPath(path, existingSeats, iconConfigs);
 
-      expect(seats).toHaveLength(1);
-      expect(seats[0].id).toBe(table.id);
+      expect(seatsInPath).toHaveLength(1);
+      expect(seatsInPath[0].id).toBe(seat1.id);
     });
   });
 });

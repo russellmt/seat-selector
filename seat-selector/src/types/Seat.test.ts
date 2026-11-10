@@ -25,12 +25,11 @@ describe('Seat Types and Utilities', () => {
   describe('createSeat', () => {
     it('should create a seat with all required properties', () => {
       const pos = createGridPosition(3, 4);
-      const seat = createSeat('chair-1', pos, 'down', 5);
+      const seat = createSeat('chair-1', pos, 'down');
 
       expect(seat.iconId).toBe('chair-1');
       expect(seat.position).toEqual(pos);
       expect(seat.rotation).toBe('down');
-      expect(seat.number).toBe(5);
       expect(seat.id).toBeDefined();
       expect(seat.id).toMatch(/^seat-/);
     });
@@ -42,11 +41,12 @@ describe('Seat Types and Utilities', () => {
       expect(seat.rotation).toBe('down');
     });
 
-    it('should use default number of 0', () => {
+    it('should not have number field', () => {
       const pos = createGridPosition(0, 0);
       const seat = createSeat('chair-1', pos, 'down');
 
-      expect(seat.number).toBe(0);
+      // Seat no longer has number field - it's calculated per grid square
+      expect((seat as any).number).toBeUndefined();
     });
 
     it('should generate unique IDs for different seats', () => {
@@ -82,11 +82,12 @@ describe('Seat Types and Utilities', () => {
   describe('Seat interface constraints', () => {
     it('should support multi-grid seats with large position values', () => {
       const pos = createGridPosition(100, 200);
-      const seat = createSeat('table-round-4', pos, 'up', 42);
+      const seat = createSeat('table-round-4', pos, 'down');
 
       expect(seat.position.col).toBe(100);
       expect(seat.position.row).toBe(200);
-      expect(seat.number).toBe(42);
+      // No number field anymore - it's calculated per grid square
+      expect((seat as any).number).toBeUndefined();
     });
 
     it('should maintain position immutability', () => {
