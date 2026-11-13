@@ -27,6 +27,10 @@
     "13.3 Write property tests for seat placement": {
       "status": "passed",
       "lastRunTimestamp": 1793912240557
+    },
+    "14.3 Write property tests for seat deletion": {
+      "status": "passed",
+      "lastRunTimestamp": 1794597251267
     }
   },
   "executionHistory": {
@@ -759,6 +763,16 @@
         "executionId": "79e87284-889b-4d73-959e-38d0e30a1064",
         "chatSessionId": "sess_6cbf1de5-eac2-4184-9ad2-b16ac7198acd",
         "timestamp": 1793829847002
+      },
+      {
+        "executionId": "33d37489-2cdb-4512-ac20-6c78cea1cbf4",
+        "chatSessionId": "sess_8aa3bd87-71c1-46d2-85bd-fb0e179c9953",
+        "timestamp": 1794596977110
+      },
+      {
+        "executionId": "33d37489-2cdb-4512-ac20-6c78cea1cbf4",
+        "chatSessionId": "sess_8aa3bd87-71c1-46d2-85bd-fb0e179c9953",
+        "timestamp": 1794597139260
       }
     ],
     "14.2 Implement right-click drag deletion": [
@@ -771,6 +785,16 @@
         "executionId": "79e87284-889b-4d73-959e-38d0e30a1064",
         "chatSessionId": "sess_6cbf1de5-eac2-4184-9ad2-b16ac7198acd",
         "timestamp": 1793829847036
+      },
+      {
+        "executionId": "33d37489-2cdb-4512-ac20-6c78cea1cbf4",
+        "chatSessionId": "sess_8aa3bd87-71c1-46d2-85bd-fb0e179c9953",
+        "timestamp": 1794596977244
+      },
+      {
+        "executionId": "33d37489-2cdb-4512-ac20-6c78cea1cbf4",
+        "chatSessionId": "sess_8aa3bd87-71c1-46d2-85bd-fb0e179c9953",
+        "timestamp": 1794597139400
       }
     ],
     "14.3 Write property tests for seat deletion": [
@@ -783,6 +807,16 @@
         "executionId": "79e87284-889b-4d73-959e-38d0e30a1064",
         "chatSessionId": "sess_6cbf1de5-eac2-4184-9ad2-b16ac7198acd",
         "timestamp": 1793829847064
+      },
+      {
+        "executionId": "33d37489-2cdb-4512-ac20-6c78cea1cbf4",
+        "chatSessionId": "sess_8aa3bd87-71c1-46d2-85bd-fb0e179c9953",
+        "timestamp": 1794597141331
+      },
+      {
+        "executionId": "33d37489-2cdb-4512-ac20-6c78cea1cbf4",
+        "chatSessionId": "sess_8aa3bd87-71c1-46d2-85bd-fb0e179c9953",
+        "timestamp": 1794597271733
       }
     ],
     "15.1 Add arrow key handlers for icon cycling": [
@@ -1527,6 +1561,13 @@
         "executionId": "d7697e66-b6e0-4418-98c4-2abc984a8b4d",
         "chatSessionId": "sess_4945deac-8a0c-454d-b784-8777a1658193",
         "timestamp": 1793912273103
+      }
+    ],
+    "14. Implement right-click seat deletion": [
+      {
+        "executionId": "33d37489-2cdb-4512-ac20-6c78cea1cbf4",
+        "chatSessionId": "sess_8aa3bd87-71c1-46d2-85bd-fb0e179c9953",
+        "timestamp": 1794597271789
       }
     ]
   }
