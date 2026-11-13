@@ -5,7 +5,7 @@ import { IconBank } from '../components/IconBank';
 import { GridCanvas } from '../components/canvas';
 import { iconConfigService } from '../services/IconConfigService';
 import { GRID_SQUARE_SIZE_PX } from '../constants/gridConstants';
-import { hasCollision } from '../utils/collision';
+import { hasCollision, findSeatsInPath } from '../utils/collision';
 import { createSeat } from '../types/Seat';
 import type { GridPosition } from '../types/Seat';
 import type { Rotation } from '../types/Icon';
@@ -23,6 +23,7 @@ import './SeatCanvas.css';
  * **Validates: Requirements 1.1, 3.1, 5.1, 5.2, 5.3, 5.4, 14.1, 15.1, 16.1**
  */
 export default function SeatCanvas() {
+  console.log('[SeatCanvas] Component loaded and rendering');
   const navigate = useNavigate();
   const { 
     setCurrentPage, 
@@ -32,6 +33,7 @@ export default function SeatCanvas() {
     setRotation,
     seats,
     addSeat,
+    removeSeat,
     updateSeatNumbers,
   } = useApp();
   const icons = iconConfigService.getAllConfigs();
@@ -91,8 +93,58 @@ export default function SeatCanvas() {
     updateSeatNumbers();
   };
 
-  const handleSeatRemove = () => {
-    // Placeholder: actual seat deletion logic comes in task 14
+  const handleSeatRemove = (positions: GridPosition[]) => {
+    console.log('[SeatCanvas.handleSeatRemove] START with positions:', JSON.stringify(positions));
+    // Find all seats that occupy any of the grid positions in the path
+    // This handles both single-click deletion and drag-to-delete
+    console.log('[SeatCanvas] handleSeatRemove called with positions:', positions);
+    
+    // Use the findSeatsInPath utility to find all seats in the deletion path
+    const seatsToRemove = findSeatsInPath(positions, seats, iconConfigs);
+    console.log('[SeatCanvas] Found seats to remove:', seatsToRemove.length, seatsToRemove);
+    
+    if (seatsToRemove.length === 0) {
+      console.log('[SeatCanvas] No seats found to remove');
+      return;
+    }
+    
+    // Remove all found seats
+    seatsToRemove.forEach((seat) => {
+      console.log('[SeatCanvas] Removing seat:', seat.id);
+      removeSeat(seat.id);
+    });
+    
+    // Recalculate seat numbers after deletion
+    // This ensures remaining seats are renumbered in order
+    console.log('[SeatCanvas] Recalculating seat numbers');
+    updateSeatNumbers();
+  };
+
+  const handleCanvasContextMenu = (event: React.MouseEvent<HTMLElement>) => {
+    event.preventDefault();
+    console.log('[SeatCanvas] Context menu on canvas container');
+    
+    // Get the SVG element
+    const svg = document.querySelector('svg.grid-canvas') as SVGSVGElement;
+    if (!svg) {
+      console.log('[SeatCanvas] SVG element not found');
+      return;
+    }
+
+    // Get SVG position
+    const rect = svg.getBoundingClientRect();
+    const pixelX = event.clientX - rect.left;
+    const pixelY = event.clientY - rect.top;
+
+    // Convert to grid coordinates
+    const col = Math.floor(pixelX / gridDimensions.squareSize);
+    const row = Math.floor(pixelY / gridDimensions.squareSize);
+
+    console.log('[SeatCanvas] Right-click context menu at pixel:', { pixelX, pixelY }, 'grid:', { col, row });
+
+    if (col >= 0 && col < gridDimensions.cols && row >= 0 && row < gridDimensions.rows) {
+      handleSeatRemove([{ col, row }]);
+    }
   };
 
   // Grid dimensions for the canvas
@@ -139,7 +191,7 @@ export default function SeatCanvas() {
         </aside>
 
         {/* Grid Canvas Area - Integrated with child renderers */}
-        <section className="grid-canvas">
+        <section className="grid-canvas" onContextMenu={handleCanvasContextMenu}>
           <GridCanvas
             seats={seats}
             selectedIconId={selectedIconId}
