@@ -1,10 +1,7 @@
 import { useNavigate } from "react-router-dom";
-import TempButton from "../components/TempButton";
-import { TempDialogProvider, useDialog } from "../components/TempDialog";
 
 function HomeContent() {
   const navigate = useNavigate();
-  const { open: openDialog } = useDialog();
 
   const handleNewConfig = () => {
     navigate("/canvas");
@@ -23,15 +20,10 @@ function HomeContent() {
         <h2>Load Existing Config</h2>
         <p>Coming in Phase 2</p>
       </section>
-      <TempButton name="Hello" onClick={openDialog} />
     </div>
   );
 }
 
 export default function Home() {
-  return (
-    <TempDialogProvider>
-      <HomeContent />
-    </TempDialogProvider>
-  );
+  return <HomeContent />;
 }
