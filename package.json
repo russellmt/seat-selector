@@ -1,5 +1,8 @@
 {
   "devDependencies": {
     "jsdom": "^27.0.1"
+  },
+  "dependencies": {
+    "bootstrap": "^5.3.9"
   }
 }
