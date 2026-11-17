@@ -213,21 +213,21 @@ Build the Seat Canvas page with grid rendering, icon selection, seat placement/d
     - **Property 5: Icon Size Matches Configuration**
     - **Validates: Requirements 7.1, 7.2, 11.1, 11.2, 11.3, 11.4, 11.5**
 
-- [ ] 14. Implement right-click seat deletion
-  - [~] 14.1 Build right-click deletion handler
+- [x] 14. Implement right-click seat deletion
+  - [x] 14.1 Build right-click deletion handler
     - Detect right-click on canvas (prevent context menu)
     - Find seat at clicked position
     - Remove seat from AppContext state
     - Recalculate seat numbers
     - _Requirements: 8.1, 8.3_
   
-  - [~] 14.2 Implement right-click drag deletion
+  - [x] 14.2 Implement right-click drag deletion
     - Support click-and-drag deletion along path
     - Delete all seats intersecting drag path
     - Recalculate seat numbers after deletion
     - _Requirements: 8.2, 8.3_
   
-  - [~] 14.3 Write property tests for seat deletion
+  - [x] 14.3 Write property tests for seat deletion
     - **Property 2: Seat Deletion Removes Seat**
     - **Property 6: Implicit Numbering Is Deterministic**
     - **Validates: Requirements 8.1, 8.2, 8.4, 12.1, 12.2, 12.3, 12.4**

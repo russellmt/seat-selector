@@ -161,6 +161,40 @@ export const GridCanvas: React.FC<GridCanvasProps> = ({
         };
       });
 
+      // Add/delete at current position while dragging
+      if (state.dragState) {
+        const { mouseButton, currentPosition } = state.dragState;
+        
+        // Avoid repeated add/delete at same position
+        if (currentPosition.col !== gridPosition.col || currentPosition.row !== gridPosition.row) {
+          if (mouseButton === 'left') {
+            onSeatAdd(gridPosition, selectedIconId, selectedRotation);
+            if (selectedGuestId && onGuestAssign) {
+              onGuestAssign(gridPosition, selectedGuestId);
+            }
+          } else if (mouseButton === 'right') {
+            onSeatRemove([gridPosition]);
+          }
+        }
+      }
+
+      // Add/delete at current position while dragging
+      if (state.dragState) {
+        const { mouseButton, currentPosition } = state.dragState;
+        
+        // Avoid repeated add/delete at same position
+        if (currentPosition.col !== gridPosition.col || currentPosition.row !== gridPosition.row) {
+          if (mouseButton === 'left') {
+            onSeatAdd(gridPosition, selectedIconId, selectedRotation);
+            if (selectedGuestId && onGuestAssign) {
+              onGuestAssign(gridPosition, selectedGuestId);
+            }
+          } else if (mouseButton === 'right') {
+            onSeatRemove([gridPosition]);
+          }
+        }
+      }
+
       // Update drag state if currently dragging
       if (state.dragState) {
         setState((prev) => ({
@@ -190,7 +224,17 @@ export const GridCanvas: React.FC<GridCanvasProps> = ({
 
       if (!isLeftClick && !isRightClick) return;
 
-      // Start drag state
+      // Immediately add/delete at clicked position
+      if (isLeftClick) {
+        onSeatAdd(gridPosition, selectedIconId, selectedRotation);
+        if (selectedGuestId && onGuestAssign) {
+          onGuestAssign(gridPosition, selectedGuestId);
+        }
+      } else if (isRightClick) {
+        onSeatRemove([gridPosition]);
+      }
+
+      // Start drag state for continued add/delete while moving
       const dragState: DragState = {
         startPosition: gridPosition,
         currentPosition: gridPosition,
@@ -202,83 +246,24 @@ export const GridCanvas: React.FC<GridCanvasProps> = ({
         dragState,
       }));
     },
-    [readOnly, eventToGridPosition],
+    [readOnly, eventToGridPosition, selectedIconId, selectedRotation, selectedGuestId, onSeatAdd, onSeatRemove, onGuestAssign],
   );
 
   /**
    * Handles mouse up to complete drag operations or process single clicks
    */
   const handleMouseUp = useCallback(
-    (event: React.MouseEvent<SVGSVGElement>) => {
+    (_event: React.MouseEvent<SVGSVGElement>) => {
       if (readOnly) return;
 
-      const gridPosition = eventToGridPosition(event.clientX, event.clientY);
-      if (!gridPosition || !state.dragState) return;
-
-      const { startPosition, mouseButton } = state.dragState;
-      const endPosition = gridPosition;
-
-      // Determine if this was a drag or a single click
-      const isDrag =
-        startPosition.col !== endPosition.col || startPosition.row !== endPosition.row;
-
-      // Debug logging
-      console.log('[GridCanvas] Mouse up event:', {
-        gridPosition,
-        isDrag,
-        mouseButton,
-        startPosition,
-        endPosition,
-        selectedIconId,
-        selectedRotation,
-      });
-
-      try {
-        if (mouseButton === 'left') {
-          // Left click/drag: add seat(s)
-          if (isDrag) {
-            // Drag operation: calculate path and add seats at each position
-            const path = calculateDragPath(startPosition, endPosition);
-            console.log('[GridCanvas] Drag path:', path);
-            path.forEach((pos) => {
-              console.log('[GridCanvas] Adding seat at position:', pos);
-              onSeatAdd(pos, selectedIconId, selectedRotation);
-            });
-          } else {
-            // Single click: add seat at clicked position
-            console.log('[GridCanvas] Single click - adding seat at:', startPosition);
-            onSeatAdd(startPosition, selectedIconId, selectedRotation);
-          }
-
-          // Handle guest assignment if in guest mode
-          if (selectedGuestId && onGuestAssign) {
-            if (isDrag) {
-              const path = calculateDragPath(startPosition, endPosition);
-              path.forEach((pos) => {
-                onGuestAssign(pos, selectedGuestId);
-              });
-            } else {
-              onGuestAssign(startPosition, selectedGuestId);
-            }
-          }
-        } else if (mouseButton === 'right') {
-          // Right click/drag: remove seat(s)
-          if (isDrag) {
-            const path = calculateDragPath(startPosition, endPosition);
-            onSeatRemove(path);
-          } else {
-            onSeatRemove([startPosition]);
-          }
-        }
-      } finally {
-        // Clear drag state
-        setState((prev) => ({
-          ...prev,
-          dragState: null,
-        }));
-      }
+      // All add/delete actions were already done during handleMouseDown and handleMouseMove
+      // Just clear the drag state
+      setState((prev) => ({
+        ...prev,
+        dragState: null,
+      }));
     },
-    [readOnly, eventToGridPosition, state.dragState, selectedIconId, selectedRotation, selectedGuestId, onSeatAdd, onSeatRemove, onGuestAssign],
+    [readOnly],
   );
 
   /**
@@ -300,37 +285,6 @@ export const GridCanvas: React.FC<GridCanvasProps> = ({
     event.preventDefault();
   }, []);
 
-  /**
-   * Calculates all grid positions along a drag path using Bresenham's line algorithm
-   */
-  const calculateDragPath = (start: GridPosition, end: GridPosition): GridPosition[] => {
-    const path: GridPosition[] = [];
-    let { col: x, row: y } = start;
-    const { col: x2, row: y2 } = end;
-
-    const dx = Math.abs(x2 - x);
-    const dy = Math.abs(y2 - y);
-    const stepX = x < x2 ? 1 : -1;
-    const stepY = y < y2 ? 1 : -1;
-    let error = dx - dy;
-
-    path.push({ col: x, row: y });
-
-    while (x !== x2 || y !== y2) {
-      const e2 = 2 * error;
-      if (e2 > -dy) {
-        error -= dy;
-        x += stepX;
-      }
-      if (e2 < dx) {
-        error += dx;
-        y += stepY;
-      }
-      path.push({ col: x, row: y });
-    }
-
-    return path;
-  };
 
   // Calculate canvas dimensions
   const canvasWidth = gridDimensions.cols * gridDimensions.squareSize;

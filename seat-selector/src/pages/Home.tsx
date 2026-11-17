@@ -1,21 +1,18 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
-export default function Home() {
+function HomeContent() {
   const navigate = useNavigate();
 
   const handleNewConfig = () => {
-    navigate('/canvas');
+    navigate("/canvas");
   };
 
   return (
     <div className="home-page">
       <h1>Seat Selector</h1>
       <p>Create custom seating arrangements for your events</p>
-      
-      <button 
-        className="new-config-button"
-        onClick={handleNewConfig}
-      >
+
+      <button className="new-config-button" onClick={handleNewConfig}>
         New Seat Config
       </button>
 
@@ -25,4 +22,8 @@ export default function Home() {
       </section>
     </div>
   );
+}
+
+export default function Home() {
+  return <HomeContent />;
 }
