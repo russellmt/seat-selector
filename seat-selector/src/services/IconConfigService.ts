@@ -74,6 +74,17 @@ export const DEFAULT_ICONS: IconConfig[] = [
       type: 'image',
       url: '/icons/couch-3.svg'
     }
+  },
+  {
+    id: 'table-square-4',
+    capacity: 0,
+    size: { width: 2, height: 2 },
+    name: 'Square Table (4-top)',
+    color: '#D4A574',
+    visual: {
+      type: 'image',
+      url: '/icons/table-square-4.svg'
+    }
   }
 ];
 

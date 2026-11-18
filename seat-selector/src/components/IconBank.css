@@ -2,11 +2,12 @@
 .icon-bank {
   display: flex;
   flex-direction: column;
-  height: 100%;
   width: 100%;
   background-color: var(--bg);
   border-right: 1px solid var(--border);
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 0;
 }
 
 /* IconBank Grid Layout */
@@ -15,9 +16,10 @@
   grid-template-columns: 1fr 1fr;
   gap: 8px;
   padding: 12px;
-  overflow-y: auto;
-  overflow-x: hidden;
   flex: 1;
+  min-height: 0;
+  height: 100%;
+  grid-auto-rows: minmax(100px, 1fr);
 }
 
 /* Scrollbar Styling */
@@ -52,12 +54,10 @@
   cursor: pointer;
   transition: all 0.2s ease;
   outline: none;
-  aspect-ratio: 1;
-  height: auto;
-  min-height: 100px;
   color: var(--text-h);
   text-decoration: none;
   user-select: none;
+  min-height: 0;
 }
 
 .icon-item:hover {
@@ -75,32 +75,33 @@
   transform: scale(0.98);
 }
 
-/* Selected State */
+/* Selected State - distinct from hover */
 .icon-item.selected {
   background-color: var(--accent-bg);
-  border-color: var(--accent);
+  border: 3px solid var(--accent);
   color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(170, 59, 255, 0.1);
+  box-shadow: 0 0 0 3px rgba(170, 59, 255, 0.2);
+  padding: 7px; /* Adjust padding to account for thicker border */
 }
 
 .icon-item.selected:hover {
-  background-color: rgba(170, 59, 255, 0.2);
-  border-color: var(--accent);
+  background-color: var(--accent-bg);
+  border: 3px solid var(--accent);
   color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(170, 59, 255, 0.15);
+  box-shadow: 0 0 0 3px rgba(170, 59, 255, 0.25);
 }
 
 .icon-item.selected:focus {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-  box-shadow: 0 0 0 3px rgba(170, 59, 255, 0.15);
+  outline: none; /* Remove outline when selected to avoid double border */
+  box-shadow: 0 0 0 3px rgba(170, 59, 255, 0.25);
 }
 
 .icon-item.selected:active {
   background-color: var(--accent-bg);
-  border-color: var(--accent);
+  border: 3px solid var(--accent);
   color: var(--accent);
   transform: scale(0.96);
+  box-shadow: 0 0 0 3px rgba(170, 59, 255, 0.2);
 }
 
 /* Button Content Container */
@@ -110,6 +111,7 @@
   align-items: center;
   gap: 6px;
   width: 100%;
+  height: 100%;
 }
 
 /* Icon Display Area - centered container for stretched SVG rendering */
@@ -120,6 +122,7 @@
   border-radius: 4px;
   flex-shrink: 0;
   background-color: transparent;
+  flex: 1;
 }
 
 /* SVG rendering - same stretching as canvas */
@@ -141,6 +144,7 @@
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+  flex-shrink: 0;
 }
 
 .icon-item.selected .icon-label {
@@ -158,7 +162,6 @@
   .icon-item {
     padding: 6px;
     gap: 4px;
-    min-height: 80px;
   }
 
   .icon-label {
@@ -175,7 +178,6 @@
   .icon-item {
     padding: 4px;
     gap: 2px;
-    min-height: 60px;
   }
 
   .icon-label {
@@ -187,6 +189,10 @@
 @media (prefers-contrast: more) {
   .icon-item {
     border-width: 3px;
+  }
+
+  .icon-item.selected {
+    border-width: 4px;
   }
 }
 
@@ -202,7 +208,7 @@
 }
 
 /* Accessibility: Focus Visible (for keyboard navigation) */
-.icon-item:focus-visible {
+.icon-item:focus-visible:not(.selected) {
   outline: 3px solid var(--accent);
   outline-offset: 2px;
 }
