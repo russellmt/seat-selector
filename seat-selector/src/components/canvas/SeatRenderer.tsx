@@ -126,6 +126,7 @@ export const SeatRenderer: React.FC<SeatRendererProps> = ({
 
           {iconConfig.visual.type === 'image' && (
             <image
+              preserveAspectRatio="none"
               x={iconPixelX}
               y={iconPixelY}
               width={iconWidthPixels}

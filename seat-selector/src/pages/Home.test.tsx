@@ -14,25 +14,26 @@ describe('Home Page', () => {
     expect(screen.getByText('Seat Selector')).toBeDefined();
   });
 
-  it('should display the "New Seat Config" button', () => {
+  it('should display the Seat Canvas navigation dropdown', () => {
     render(
       <BrowserRouter>
         <Home />
       </BrowserRouter>
     );
     
-    const button = screen.getByRole('button', { name: /new seat config/i });
-    expect(button).toBeDefined();
+    const navDropdown = screen.getByText('Seat Canvas');
+    expect(navDropdown).toBeDefined();
   });
 
-  it('should display the "Load Existing Config" section', () => {
+  it('should display the Guest Arrangement navigation dropdown', () => {
     render(
       <BrowserRouter>
         <Home />
       </BrowserRouter>
     );
     
-    expect(screen.getByText('Load Existing Config')).toBeDefined();
+    const navDropdown = screen.getByText('Guest Arrangement');
+    expect(navDropdown).toBeDefined();
   });
 
   it('should display a description', () => {

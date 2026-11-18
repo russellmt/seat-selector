@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { Button } from 'react-bootstrap';
 import { useApp } from '../context/AppContext';
 import { RotationControls } from '../components/RotationControls';
 import { IconBank } from '../components/IconBank';
@@ -55,6 +56,14 @@ export default function SeatCanvas() {
   const handleBackHome = () => {
     setCurrentPage('home');
     navigate('/');
+  };
+
+  // Calculate total seat capacity across all placed icons
+  const calculateTotalCapacity = () => {
+    return seats.reduce((total, seat) => {
+      const iconConfig = iconConfigs.get(seat.iconId);
+      return total + (iconConfig?.capacity || 0);
+    }, 0);
   };
 
   // Seat placement handler - creates seat at grid-quantized position
@@ -156,20 +165,24 @@ export default function SeatCanvas() {
     offsetY: 0,
   };
 
+  const totalCapacity = calculateTotalCapacity();
+
   return (
     <div className="seat-canvas-page">
       {/* ====== HEADER SECTION ====== */}
       <header className="canvas-header">
         <div className="header-content">
-          <button 
-            className="back-button"
+          <Button 
+            variant="outline-secondary"
+            size="sm"
             onClick={handleBackHome}
             aria-label="Back to home page"
+            className="flex-shrink-0"
           >
             ← Back
-          </button>
+          </Button>
           
-          <h1>Seat Canvas</h1>
+          <h1 className="m-0">Seat Canvas</h1>
           
           {/* Rotation controls */}
           <RotationControls 
@@ -207,34 +220,40 @@ export default function SeatCanvas() {
       {/* ====== FOOTER SECTION ====== */}
       <footer className="canvas-footer">
         <div className="footer-left">
-          <div className="seat-count">Seats: 0</div>
+          <span className="seat-count-text">
+            Seats: {totalCapacity}
+          </span>
         </div>
 
         <div className="footer-center">
-          <button 
-            className="clear-all-button"
+          <Button 
+            variant="outline-secondary"
+            size="sm"
             aria-label="Clear all seats from canvas"
+            className="me-2"
           >
             Clear All
-          </button>
-          <button 
-            className="save-button"
+          </Button>
+          <Button 
+            variant="outline-secondary"
+            size="sm"
             disabled
             title="Save functionality coming in Phase 2"
             aria-label="Save configuration (Phase 2)"
           >
             Save
-          </button>
+          </Button>
         </div>
 
         <div className="footer-right">
-          <button 
-            className="add-guests-button"
+          <Button 
+            variant="primary"
+            size="sm"
             onClick={handleAddGuests}
             aria-label="Navigate to guest arrangement page"
           >
             Add Guests
-          </button>
+          </Button>
         </div>
       </footer>
     </div>

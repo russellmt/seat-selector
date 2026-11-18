@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import type { IconConfig } from '../types/Icon';
+import { GRID_SQUARE_SIZE_PX } from '../constants/gridConstants';
 import './IconBank.css';
 
 /**
@@ -26,7 +27,8 @@ export interface IconBankProps {
  * Icons are sorted by ascending capacity (0-person table first, then 1-person chair, etc.).
  * Each icon displays its capacity label and is highlighted when selected.
  * 
- * Supports both SVG icons (inline) and image icons (PNG, JPG from CDN).
+ * Uses the same stretched rendering logic as the canvas (SVG image element with 
+ * preserveAspectRatio="none") to ensure visual consistency across the application.
  *
  * Features:
  * - 2-column grid layout with automatic row calculation
@@ -37,15 +39,16 @@ export interface IconBankProps {
  * - Responsive sizing based on parent container width
  * - Keyboard navigation support (arrow keys)
  * - Accessible ARIA labels
- * - Support for both SVG and image icons
+ * - Same stretched rendering as canvas for consistency
+ * - Uses same grid size (GRID_SQUARE_SIZE_PX) as canvas
  *
  * **Validates: Requirements 4.1, 4.2, 4.3, 4.4, 4.5, 4.6**
  *
  * @example
  * ```tsx
  * const icons = [
- *   { id: 'chair-1', capacity: 1, name: 'Chair', visual: { type: 'svg', content: '...' } },
- *   { id: 'table-4', capacity: 0, name: 'Round Table', visual: { type: 'image', url: 'https://...' } }
+ *   { id: 'chair-1', capacity: 1, name: 'Chair', visual: { type: 'image', url: '/icons/chair-1.svg' } },
+ *   { id: 'table-4', capacity: 0, name: 'Round Table', visual: { type: 'image', url: '/icons/table-round-4.svg' } }
  * ];
  *
  * <IconBank
@@ -98,6 +101,9 @@ export const IconBank: React.FC<IconBankProps> = ({
       <div className="icon-bank-grid">
         {sortedIcons.map((icon, index) => {
           const isSelected = icon.id === selectedIconId;
+          // Use same grid size as canvas for visual consistency
+          const iconWidthPixels = icon.size.width * GRID_SQUARE_SIZE_PX;
+          const iconHeightPixels = icon.size.height * GRID_SQUARE_SIZE_PX;
 
           return (
             <div
@@ -105,44 +111,38 @@ export const IconBank: React.FC<IconBankProps> = ({
               className={`icon-item ${isSelected ? 'selected' : ''}`}
               onClick={() => handleIconClick(icon.id)}
               onKeyDown={(e) => handleKeyDown(e, index)}
-              role="button"
               tabIndex={isSelected ? 0 : -1}
+              role="button"
               aria-pressed={isSelected}
               aria-label={`${icon.name} - ${getCapacityLabel(icon.capacity)}`}
               title={`${icon.name}\n${getCapacityLabel(icon.capacity)}`}
             >
-              <div
-                className="icon-display"
-                style={{
-                  backgroundColor: icon.color,
-                  width: `${icon.size.width * 30}px`,
-                  height: `${icon.size.height * 30}px`,
-                }}
-              >
-                {/* SVG icon display */}
-                {icon.visual.type === 'svg' && (
+              <div className="icon-button-content">
+                <div
+                  className="icon-display"
+                >
+                  {/* Render icon using SVG image element with same stretching logic as canvas */}
                   <svg
-                    viewBox="0 0 2 2"
-                    className="icon-svg"
-                    dangerouslySetInnerHTML={{ __html: icon.visual.content }}
-                  />
-                )}
-
-                {/* Image icon display */}
-                {icon.visual.type === 'image' && (
-                  <img
-                    src={icon.visual.url}
-                    alt={icon.name}
-                    className="icon-image"
+                    width={iconWidthPixels}
+                    height={iconHeightPixels}
+                    viewBox={`0 0 ${icon.size.width} ${icon.size.height}`}
+                    preserveAspectRatio="none"
                     style={{
-                      width: '100%',
-                      height: '100%',
-                      objectFit: 'contain',
+                      display: 'block',
                     }}
-                  />
-                )}
+                  >
+                    <image
+                      preserveAspectRatio="none"
+                      x="0"
+                      y="0"
+                      width={icon.size.width}
+                      height={icon.size.height}
+                      href={icon.visual.type === 'image' ? icon.visual.url : undefined}
+                    />
+                  </svg>
+                </div>
+                <div className="icon-label">{getCapacityLabel(icon.capacity)}</div>
               </div>
-              <div className="icon-label">{getCapacityLabel(icon.capacity)}</div>
             </div>
           );
         })}

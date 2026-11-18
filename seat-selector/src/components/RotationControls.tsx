@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { ButtonGroup, Button } from 'react-bootstrap';
 import type { Rotation } from '../types/Icon';
 import './RotationControls.css';
 
@@ -79,16 +80,6 @@ export const RotationControls: React.FC<RotationControlsProps> = ({
     onRotate(nextRotation);
   };
 
-  const getRotationLabel = (rotation: Rotation): string => {
-    const labels: Record<Rotation, string> = {
-      left: 'Rotate Left',
-      up: 'Rotate Up',
-      right: 'Rotate Right',
-      down: 'Rotate Down',
-    };
-    return labels[rotation];
-  };
-
   const getRotationIcon = (rotation: Rotation): string => {
     const icons: Record<Rotation, string> = {
       left: '←',
@@ -101,67 +92,63 @@ export const RotationControls: React.FC<RotationControlsProps> = ({
 
   return (
     <div className="rotation-controls" role="group" aria-label="Icon rotation controls">
-      {/* Left Button */}
-      <button
-        className={`rotation-button rotation-button-left ${
-          currentRotation === 'left' ? 'active' : ''
-        }`}
-        onClick={() => onRotate('left')}
-        title={`${getRotationLabel('left')} (Click to select)`}
-        aria-label="Rotate icon left"
-        aria-pressed={currentRotation === 'left'}
-      >
-        <span className="rotation-icon">{getRotationIcon('left')}</span>
-      </button>
+      <ButtonGroup size="sm">
+        {/* Left Button */}
+        <Button
+          variant={currentRotation === 'left' ? 'primary' : 'outline-secondary'}
+          onClick={() => onRotate('left')}
+          title="Rotate icon left (Click to select)"
+          aria-label="Rotate icon left"
+          aria-pressed={currentRotation === 'left'}
+        >
+          {getRotationIcon('left')}
+        </Button>
 
-      {/* Up Button */}
-      <button
-        className={`rotation-button rotation-button-up ${
-          currentRotation === 'up' ? 'active' : ''
-        }`}
-        onClick={() => onRotate('up')}
-        title={`${getRotationLabel('up')} (Click to select)`}
-        aria-label="Rotate icon up"
-        aria-pressed={currentRotation === 'up'}
-      >
-        <span className="rotation-icon">{getRotationIcon('up')}</span>
-      </button>
+        {/* Up Button */}
+        <Button
+          variant={currentRotation === 'up' ? 'primary' : 'outline-secondary'}
+          onClick={() => onRotate('up')}
+          title="Rotate icon up (Click to select)"
+          aria-label="Rotate icon up"
+          aria-pressed={currentRotation === 'up'}
+        >
+          {getRotationIcon('up')}
+        </Button>
 
-      {/* Right Button */}
-      <button
-        className={`rotation-button rotation-button-right ${
-          currentRotation === 'right' ? 'active' : ''
-        }`}
-        onClick={() => onRotate('right')}
-        title={`${getRotationLabel('right')} (Click to select)`}
-        aria-label="Rotate icon right"
-        aria-pressed={currentRotation === 'right'}
-      >
-        <span className="rotation-icon">{getRotationIcon('right')}</span>
-      </button>
+        {/* Right Button */}
+        <Button
+          variant={currentRotation === 'right' ? 'primary' : 'outline-secondary'}
+          onClick={() => onRotate('right')}
+          title="Rotate icon right (Click to select)"
+          aria-label="Rotate icon right"
+          aria-pressed={currentRotation === 'right'}
+        >
+          {getRotationIcon('right')}
+        </Button>
 
-      {/* Down Button */}
-      <button
-        className={`rotation-button rotation-button-down ${
-          currentRotation === 'down' ? 'active' : ''
-        }`}
-        onClick={() => onRotate('down')}
-        title={`${getRotationLabel('down')} (Click to select)`}
-        aria-label="Rotate icon down"
-        aria-pressed={currentRotation === 'down'}
-      >
-        <span className="rotation-icon">{getRotationIcon('down')}</span>
-      </button>
+        {/* Down Button */}
+        <Button
+          variant={currentRotation === 'down' ? 'primary' : 'outline-secondary'}
+          onClick={() => onRotate('down')}
+          title="Rotate icon down (Click to select)"
+          aria-label="Rotate icon down"
+          aria-pressed={currentRotation === 'down'}
+        >
+          {getRotationIcon('down')}
+        </Button>
+      </ButtonGroup>
 
       {/* Cycle Button - rotates to next in sequence */}
-      <button
-        className="rotation-button-cycle"
+      <Button
+        variant="outline-secondary"
+        size="sm"
         onClick={handleRotateClick}
+        className="ms-2"
         title="Rotate to next direction (or press R)"
         aria-label="Rotate icon to next direction"
       >
         ⟳ Next (R)
-      </button>
+      </Button>
     </div>
   );
 };
