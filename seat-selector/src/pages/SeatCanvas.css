@@ -31,28 +31,6 @@
   gap: 24px;
 }
 
-.canvas-header .back-button {
-  flex-shrink: 0;
-  padding: 8px 12px;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  background: var(--bg);
-  color: var(--text-h);
-  cursor: pointer;
-  font-size: 14px;
-  transition: border-color 0.2s, background-color 0.2s;
-}
-
-.canvas-header .back-button:hover {
-  border-color: var(--accent);
-  background: var(--accent-bg);
-}
-
-.canvas-header .back-button:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-}
-
 .canvas-header h1 {
   flex: 0 0 auto;
   margin: 0;
@@ -143,63 +121,6 @@
   flex: 0 0 auto;
 }
 
-/* Footer buttons */
-.seat-count {
-  padding: 8px 12px;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  background: var(--code-bg);
-  color: var(--text-h);
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.clear-all-button,
-.save-button,
-.add-guests-button {
-  padding: 8px 16px;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  background: var(--bg);
-  color: var(--text-h);
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  transition: border-color 0.2s, background-color 0.2s, color 0.2s;
-}
-
-.clear-all-button:hover:not(:disabled),
-.save-button:hover:not(:disabled),
-.add-guests-button:hover:not(:disabled) {
-  border-color: var(--accent);
-  background: var(--accent-bg);
-  color: var(--text-h);
-}
-
-.clear-all-button:focus-visible,
-.save-button:focus-visible,
-.add-guests-button:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-}
-
-.add-guests-button {
-  border-color: var(--accent);
-  background: var(--accent-bg);
-  color: var(--accent);
-}
-
-.add-guests-button:hover:not(:disabled) {
-  background: rgba(170, 59, 255, 0.2);
-  border-color: var(--accent);
-}
-
-/* Disabled state */
-.save-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
 /* Responsive design */
 @media (max-width: 768px) {
   .canvas-header {
@@ -252,4 +173,12 @@
     border-right: none;
     border-bottom: 1px solid var(--border);
   }
+}
+
+/* Seat count text styling */
+.seat-count-text {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-h);
+  padding: 0;
 }

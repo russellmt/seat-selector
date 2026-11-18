@@ -163,6 +163,7 @@ const IconPreview: React.FC<{
 
         {iconConfig.visual.type === 'image' && (
           <image
+            preserveAspectRatio="none"
             x={startPixelX}
             y={startPixelY}
             width={iconWidthPixels}

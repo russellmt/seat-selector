@@ -4,6 +4,9 @@ import type { IconConfig } from '../types';
  * Default icon configurations for available seat types
  * Organized by seating capacity
  * 
+ * SVG files are stored in /public/icons/ and referenced by URL
+ * This allows easy customization of icons without rebuilding the app
+ * 
  * SVG positioning strategy (when facing DOWN):
  * - Front/seating side at bottom (y=0.85), padding on left, right
  * - Back of seat at top (y=0), minimal padding
@@ -35,10 +38,8 @@ export const DEFAULT_ICONS: IconConfig[] = [
     name: 'Round Table (4-top)',
     color: '#E8B4A2',
     visual: {
-      type: 'svg',
-      // Table: 2x2 grid squares, centered circle
-      // Centered at (1,1) with radius 0.9 to fill most of the space
-      content: '<circle cx="1" cy="1" r="0.9" fill="currentColor" stroke="#333" stroke-width="0.05"/>'
+      type: 'image',
+      url: '/icons/table-round-4.svg'
     }
   },
   {
@@ -48,12 +49,8 @@ export const DEFAULT_ICONS: IconConfig[] = [
     name: 'Chair',
     color: '#8B4513',
     visual: {
-      type: 'svg',
-      // Chair: 1x1 grid square
-      // When facing DOWN: back at top (y=0), front seating at bottom (y=0.85)
-      // Padding on left (0.05), right (0.05), no padding at back, bottom gap (0.15)
-      // Rectangle from (0.05, 0) to (0.95, 0.85)
-      content: '<rect x="0.05" y="0" width="0.9" height="0.85" fill="currentColor" stroke="#333" stroke-width="0.04" rx="0.05"/>'
+      type: 'image',
+      url: '/icons/chair-1.svg'
     }
   },
   {
@@ -63,12 +60,8 @@ export const DEFAULT_ICONS: IconConfig[] = [
     name: 'Loveseat',
     color: '#D2691E',
     visual: {
-      type: 'svg',
-      // Loveseat: 2x1 grid squares (horizontal when facing DOWN/UP)
-      // When facing DOWN: back at top (y=0), front at bottom (y=0.85)
-      // Padding on left (0.05), right (0.05), no padding at back, bottom gap (0.15)
-      // Rectangle from (0.05, 0) to (1.95, 0.85)
-      content: '<rect x="0.05" y="0" width="1.9" height="0.85" fill="currentColor" stroke="#333" stroke-width="0.04" rx="0.05"/>'
+      type: 'image',
+      url: '/icons/loveseat-2.svg'
     }
   },
   {
@@ -78,12 +71,8 @@ export const DEFAULT_ICONS: IconConfig[] = [
     name: 'Couch',
     color: '#A0522D',
     visual: {
-      type: 'svg',
-      // Couch: 3x1 grid squares (horizontal when facing DOWN/UP)
-      // When facing DOWN: back at top (y=0), front at bottom (y=0.85)
-      // Padding on left (0.05), right (0.05), no padding at back, bottom gap (0.15)
-      // Rectangle from (0.05, 0) to (2.95, 0.85)
-      content: '<rect x="0.05" y="0" width="2.9" height="0.85" fill="currentColor" stroke="#333" stroke-width="0.04" rx="0.05"/>'
+      type: 'image',
+      url: '/icons/couch-3.svg'
     }
   }
 ];

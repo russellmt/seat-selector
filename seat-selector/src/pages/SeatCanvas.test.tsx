@@ -227,15 +227,11 @@ describe('SeatCanvas Page - Icon Selection and Highlighting (Task 10.2)', () => 
     });
 
     it('should display table icon as selected by default', () => {
-      const { container } = render(<SeatCanvasWithProviders />);
+      render(<SeatCanvasWithProviders />);
       
-      // Find selected icon item
-      const selectedIcon = container.querySelector('.icon-item.selected');
-      expect(selectedIcon).toBeDefined();
-      
-      // Verify it's the table icon
-      const label = selectedIcon?.getAttribute('aria-label');
-      expect(label?.includes('Round Table')).toBe(true);
+      // Find the selected icon by aria-pressed attribute
+      const selectedIcon = screen.getByLabelText(/Round Table/i);
+      expect(selectedIcon.getAttribute('aria-pressed')).toBe('true');
     });
 
     it('should update AppContext selectedIconId when icon is clicked', () => {
@@ -353,40 +349,41 @@ describe('SeatCanvas Page - Icon Selection and Highlighting (Task 10.2)', () => 
 
   describe('Visual Highlighting', () => {
     it('should apply selected class to selected icon item', () => {
-      const { container } = render(<SeatCanvasWithProviders />);
+      render(<SeatCanvasWithProviders />);
       
-      // Find the selected icon item
-      const selectedIcon = container.querySelector('.icon-item.selected');
-      expect(selectedIcon).toBeDefined();
-      expect(selectedIcon?.className).toContain('selected');
+      // Find selected icon by aria-pressed attribute
+      const selectedIcon = screen.getByLabelText(/Round Table/i);
+      expect(selectedIcon.getAttribute('aria-pressed')).toBe('true');
     });
 
     it('should update visual highlight when different icon is selected', () => {
-      const { container } = render(<SeatCanvasWithProviders />);
+      render(<SeatCanvasWithProviders />);
       
       // Click on chair icon
       const chairButton = screen.getByLabelText(/Chair/i);
       fireEvent.click(chairButton);
       
-      // Find all selected items
-      const selectedItems = container.querySelectorAll('.icon-item.selected');
+      // Verify chair is now selected
+      expect(chairButton.getAttribute('aria-pressed')).toBe('true');
       
-      // Should only have one selected item
-      expect(selectedItems.length).toBe(1);
-      
-      // It should be the chair
-      expect(selectedItems[0].getAttribute('aria-label')?.includes('Chair')).toBe(true);
+      // Verify table is no longer selected
+      const tableButton = screen.getByLabelText(/Round Table/i);
+      expect(tableButton.getAttribute('aria-pressed')).toBe('false');
     });
 
     it('should not highlight unselected icons', () => {
-      const { container } = render(<SeatCanvasWithProviders />);
+      render(<SeatCanvasWithProviders />);
       
-      // Get all icon items
-      const allIcons = container.querySelectorAll('.icon-item');
+      // Get all icon buttons and count selected ones
+      const buttons = screen.getAllByRole('button').filter(
+        btn => btn.getAttribute('aria-label')?.includes('Table') ||
+               btn.getAttribute('aria-label')?.includes('Chair') ||
+               btn.getAttribute('aria-label')?.includes('Loveseat') ||
+               btn.getAttribute('aria-label')?.includes('Couch')
+      );
       
-      // Count selected items (should be exactly 1)
-      const selectedCount = Array.from(allIcons).filter(item =>
-        item.className.includes('selected')
+      const selectedCount = buttons.filter(
+        btn => btn.getAttribute('aria-pressed') === 'true'
       ).length;
       
       expect(selectedCount).toBe(1);
@@ -433,14 +430,11 @@ describe('SeatCanvas Page - Icon Selection and Highlighting (Task 10.2)', () => 
 
   describe('Initial State', () => {
     it('should initialize with table icon selected', () => {
-      const { container } = render(<SeatCanvasWithProviders />);
+      render(<SeatCanvasWithProviders />);
       
-      // Find the selected item
-      const selectedIcon = container.querySelector('.icon-item.selected');
-      const label = selectedIcon?.getAttribute('aria-label');
-      
-      // Should be table (first icon, capacity 0)
-      expect(label?.includes('Round Table')).toBe(true);
+      // Table icon should be selected by default
+      const tableButton = screen.getByLabelText(/Round Table/i);
+      expect(tableButton.getAttribute('aria-pressed')).toBe('true');
     });
 
     it('should initialize with down rotation for selected icon', () => {

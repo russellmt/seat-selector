@@ -99,7 +99,8 @@ describe('IconBank Component', () => {
         />
       );
 
-      const svgElements = container.querySelectorAll('.icon-svg');
+      // IconRenderer renders SVG elements directly, look for svg elements
+      const svgElements = container.querySelectorAll('.icon-display svg');
       expect(svgElements.length).toBe(mockIcons.length);
     });
 
@@ -184,7 +185,7 @@ describe('IconBank Component', () => {
   describe('Selection', () => {
     it('should highlight the selected icon', () => {
       const onSelectIcon = vi.fn();
-      const { container } = render(
+      render(
         <IconBank
           icons={mockIcons}
           selectedIconId="chair-1"
@@ -192,15 +193,13 @@ describe('IconBank Component', () => {
         />
       );
 
-      const selectedItems = container.querySelectorAll('.icon-item.selected');
-      expect(selectedItems.length).toBe(1);
-      const label = selectedItems[0].getAttribute('aria-label');
-      expect(label?.includes('Chair')).toBe(true);
+      const chairButton = screen.getByLabelText(/Chair/i);
+      expect(chairButton.getAttribute('aria-pressed')).toBe('true');
     });
 
     it('should update selection when selectedIconId prop changes', () => {
       const onSelectIcon = vi.fn();
-      const { rerender, container } = render(
+      const { rerender } = render(
         <IconBank
           icons={mockIcons}
           selectedIconId="table-round-4"
@@ -208,9 +207,8 @@ describe('IconBank Component', () => {
         />
       );
 
-      let selectedItems = container.querySelectorAll('.icon-item.selected');
-      let label = selectedItems[0].getAttribute('aria-label');
-      expect(label?.includes('Round Table')).toBe(true);
+      let selectedButton = screen.getByLabelText(/Round Table/i);
+      expect(selectedButton.getAttribute('aria-pressed')).toBe('true');
 
       rerender(
         <IconBank
@@ -220,9 +218,8 @@ describe('IconBank Component', () => {
         />
       );
 
-      selectedItems = container.querySelectorAll('.icon-item.selected');
-      label = selectedItems[0].getAttribute('aria-label');
-      expect(label?.includes('Loveseat')).toBe(true);
+      selectedButton = screen.getByLabelText(/Loveseat/i);
+      expect(selectedButton.getAttribute('aria-pressed')).toBe('true');
     });
 
     it('should call onSelectIcon when an icon is clicked', () => {
@@ -507,22 +504,22 @@ describe('IconBank Component', () => {
         />
       );
 
-      const displays = container.querySelectorAll('.icon-display');
+      const svgs = container.querySelectorAll('.icon-display svg');
 
-      // Table: 2x2, so 60x60 (30px per grid square)
-      const tableDisplay = displays[0];
-      expect(tableDisplay?.getAttribute('style')?.includes('width: 60px')).toBe(true);
-      expect(tableDisplay?.getAttribute('style')?.includes('height: 60px')).toBe(true);
+      // Table: 2x2, so 48x48px (24px per grid square)
+      const tableSvg = svgs[0];
+      expect(tableSvg?.getAttribute('width')).toBe('48');
+      expect(tableSvg?.getAttribute('height')).toBe('48');
 
-      // Chair: 1x1, so 30x30
-      const chairDisplay = displays[1];
-      expect(chairDisplay?.getAttribute('style')?.includes('width: 30px')).toBe(true);
-      expect(chairDisplay?.getAttribute('style')?.includes('height: 30px')).toBe(true);
+      // Chair: 1x1, so 24x24px
+      const chairSvg = svgs[1];
+      expect(chairSvg?.getAttribute('width')).toBe('24');
+      expect(chairSvg?.getAttribute('height')).toBe('24');
 
-      // Loveseat: 2x1, so 60x30
-      const loveseDisplay = displays[2];
-      expect(loveseDisplay?.getAttribute('style')?.includes('width: 60px')).toBe(true);
-      expect(loveseDisplay?.getAttribute('style')?.includes('height: 30px')).toBe(true);
+      // Loveseat: 2x1, so 48x24px
+      const loveseatSvg = svgs[2];
+      expect(loveseatSvg?.getAttribute('width')).toBe('48');
+      expect(loveseatSvg?.getAttribute('height')).toBe('24');
     });
   });
 

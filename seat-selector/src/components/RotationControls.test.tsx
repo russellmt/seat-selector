@@ -38,7 +38,7 @@ describe('RotationControls Component', () => {
         <RotationControls currentRotation="down" onRotate={mockOnRotate} />
       );
 
-      const container = screen.getByRole('group');
+      const container = screen.getByRole('group', { name: 'Icon rotation controls' });
       expect(container).toBeDefined();
       expect(container.getAttribute('aria-label')).toBe('Icon rotation controls');
 
@@ -59,11 +59,11 @@ describe('RotationControls Component', () => {
       );
 
       const downButton = screen.getByLabelText('Rotate icon down');
-      expect(downButton.classList.contains('active')).toBe(true);
+      expect(downButton.getAttribute('aria-pressed')).toBe('true');
 
-      expect(screen.getByLabelText('Rotate icon left').classList.contains('active')).toBe(false);
-      expect(screen.getByLabelText('Rotate icon up').classList.contains('active')).toBe(false);
-      expect(screen.getByLabelText('Rotate icon right').classList.contains('active')).toBe(false);
+      expect(screen.getByLabelText('Rotate icon left').getAttribute('aria-pressed')).toBe('false');
+      expect(screen.getByLabelText('Rotate icon up').getAttribute('aria-pressed')).toBe('false');
+      expect(screen.getByLabelText('Rotate icon right').getAttribute('aria-pressed')).toBe('false');
     });
 
     it('should highlight the currently selected rotation (left)', () => {
@@ -73,11 +73,11 @@ describe('RotationControls Component', () => {
       );
 
       const leftButton = screen.getByLabelText('Rotate icon left');
-      expect(leftButton.classList.contains('active')).toBe(true);
+      expect(leftButton.getAttribute('aria-pressed')).toBe('true');
 
-      expect(screen.getByLabelText('Rotate icon up').classList.contains('active')).toBe(false);
-      expect(screen.getByLabelText('Rotate icon right').classList.contains('active')).toBe(false);
-      expect(screen.getByLabelText('Rotate icon down').classList.contains('active')).toBe(false);
+      expect(screen.getByLabelText('Rotate icon up').getAttribute('aria-pressed')).toBe('false');
+      expect(screen.getByLabelText('Rotate icon right').getAttribute('aria-pressed')).toBe('false');
+      expect(screen.getByLabelText('Rotate icon down').getAttribute('aria-pressed')).toBe('false');
     });
 
     it('should highlight the currently selected rotation (up)', () => {
@@ -87,11 +87,11 @@ describe('RotationControls Component', () => {
       );
 
       const upButton = screen.getByLabelText('Rotate icon up');
-      expect(upButton.classList.contains('active')).toBe(true);
+      expect(upButton.getAttribute('aria-pressed')).toBe('true');
 
-      expect(screen.getByLabelText('Rotate icon left').classList.contains('active')).toBe(false);
-      expect(screen.getByLabelText('Rotate icon right').classList.contains('active')).toBe(false);
-      expect(screen.getByLabelText('Rotate icon down').classList.contains('active')).toBe(false);
+      expect(screen.getByLabelText('Rotate icon left').getAttribute('aria-pressed')).toBe('false');
+      expect(screen.getByLabelText('Rotate icon right').getAttribute('aria-pressed')).toBe('false');
+      expect(screen.getByLabelText('Rotate icon down').getAttribute('aria-pressed')).toBe('false');
     });
 
     it('should highlight the currently selected rotation (right)', () => {
@@ -101,11 +101,11 @@ describe('RotationControls Component', () => {
       );
 
       const rightButton = screen.getByLabelText('Rotate icon right');
-      expect(rightButton.classList.contains('active')).toBe(true);
+      expect(rightButton.getAttribute('aria-pressed')).toBe('true');
 
-      expect(screen.getByLabelText('Rotate icon left').classList.contains('active')).toBe(false);
-      expect(screen.getByLabelText('Rotate icon up').classList.contains('active')).toBe(false);
-      expect(screen.getByLabelText('Rotate icon down').classList.contains('active')).toBe(false);
+      expect(screen.getByLabelText('Rotate icon left').getAttribute('aria-pressed')).toBe('false');
+      expect(screen.getByLabelText('Rotate icon up').getAttribute('aria-pressed')).toBe('false');
+      expect(screen.getByLabelText('Rotate icon down').getAttribute('aria-pressed')).toBe('false');
     });
 
     it('should update highlight when currentRotation prop changes', () => {
@@ -114,14 +114,14 @@ describe('RotationControls Component', () => {
         <RotationControls currentRotation="down" onRotate={mockOnRotate} />
       );
 
-      expect(screen.getByLabelText('Rotate icon down').classList.contains('active')).toBe(true);
+      expect(screen.getByLabelText('Rotate icon down').getAttribute('aria-pressed')).toBe('true');
 
       rerender(
         <RotationControls currentRotation="left" onRotate={mockOnRotate} />
       );
 
-      expect(screen.getByLabelText('Rotate icon down').classList.contains('active')).toBe(false);
-      expect(screen.getByLabelText('Rotate icon left').classList.contains('active')).toBe(true);
+      expect(screen.getByLabelText('Rotate icon down').getAttribute('aria-pressed')).toBe('false');
+      expect(screen.getByLabelText('Rotate icon left').getAttribute('aria-pressed')).toBe('true');
     });
   });
 
@@ -391,8 +391,8 @@ describe('RotationControls Component', () => {
       }
 
       expect(
-        screen.getByLabelText('Rotate icon down').classList.contains('active')
-      ).toBe(true);
+        screen.getByLabelText('Rotate icon down').getAttribute('aria-pressed')
+      ).toBe('true');
     });
   });
 
@@ -464,7 +464,7 @@ describe('RotationControls Component', () => {
       );
 
       for (const rotation of rotations) {
-        expect(screen.getByLabelText(`Rotate icon ${rotation}`).classList.contains('active')).toBe(true);
+        expect(screen.getByLabelText(`Rotate icon ${rotation}`).getAttribute('aria-pressed')).toBe('true');
 
         currentIndex = (currentIndex + 1) % rotations.length;
         rerender(
@@ -505,7 +505,7 @@ describe('RotationControls Component', () => {
           <RotationControls currentRotation={rotation} onRotate={mockOnRotate} />
         );
 
-        expect(screen.getByLabelText(`Rotate icon ${rotation}`).classList.contains('active')).toBe(true);
+        expect(screen.getByLabelText(`Rotate icon ${rotation}`).getAttribute('aria-pressed')).toBe('true');
         unmount();
       }
     });
