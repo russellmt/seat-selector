@@ -365,7 +365,7 @@ describe('IconBank Component', () => {
       expect(onSelectIcon).toHaveBeenCalledWith('couch-3');
     });
 
-    it('should navigate with ArrowDown (same as ArrowRight)', () => {
+    it('should move down one row with ArrowDown (two icons ahead)', () => {
       const onSelectIcon = vi.fn();
       render(
         <IconBank
@@ -380,10 +380,10 @@ describe('IconBank Component', () => {
 
       fireEvent.keyDown(tableButton, { key: 'ArrowDown' });
 
-      expect(onSelectIcon).toHaveBeenCalledWith('chair-1');
+      expect(onSelectIcon).toHaveBeenCalledWith('loveseat-2');
     });
 
-    it('should navigate with ArrowUp (same as ArrowLeft)', () => {
+    it('should move up one row with ArrowUp (two icons back)', () => {
       const onSelectIcon = vi.fn();
       render(
         <IconBank
@@ -398,7 +398,7 @@ describe('IconBank Component', () => {
 
       fireEvent.keyDown(couchButton, { key: 'ArrowUp' });
 
-      expect(onSelectIcon).toHaveBeenCalledWith('loveseat-2');
+      expect(onSelectIcon).toHaveBeenCalledWith('chair-1');
     });
   });
 

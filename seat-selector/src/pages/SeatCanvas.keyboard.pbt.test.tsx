@@ -42,12 +42,13 @@ describe("SeatCanvas - Property 23: Keyboard Shortcuts Trigger Correct Actions (
    */
   it("Property: Right Arrow Key Cycles Through Icons Linearly (Requirement 9.1, 9.4)", () => {
     fc.assert(
-      fc.property(fc.integer({ min: 0, max: 3 }), (startIconIndex: number) => {
+      fc.property(fc.integer({ min: 0, max: 4 }), (startIconIndex: number) => {
         const { unmount } = render(<SeatCanvasWithProviders />);
 
         // Icon order: table-round-4 (0), chair-1 (1), loveseat-2 (2), couch-3 (3)
         const iconLabels = [
           /Round Table \(4-top\)/i,
+          /Square Table \(4-top\)/i,
           /Chair/i,
           /Loveseat/i,
           /Couch/i,
@@ -63,7 +64,7 @@ describe("SeatCanvas - Property 23: Keyboard Shortcuts Trigger Correct Actions (
         fireEvent.keyDown(window, { key: "ArrowRight" });
 
         // Expected: move to next icon linearly with wrap-around
-        const expectedIndex = (startIconIndex + 1) % 4;
+        const expectedIndex = (startIconIndex + 1) % 5;
         const expectedIcon = screen.getByLabelText(iconLabels[expectedIndex]);
         expect(expectedIcon.getAttribute("aria-pressed")).toBe("true");
 
@@ -84,12 +85,13 @@ describe("SeatCanvas - Property 23: Keyboard Shortcuts Trigger Correct Actions (
    */
   it("Property: Left Arrow Key Cycles Through Icons Linearly (Requirement 9.2, 9.3)", () => {
     fc.assert(
-      fc.property(fc.integer({ min: 0, max: 3 }), (startIconIndex: number) => {
+      fc.property(fc.integer({ min: 0, max: 4 }), (startIconIndex: number) => {
         const { unmount } = render(<SeatCanvasWithProviders />);
 
         // Icon order: table-round-4 (0), chair-1 (1), loveseat-2 (2), couch-3 (3)
         const iconLabels = [
           /Round Table \(4-top\)/i,
+          /Square Table \(4-top\)/i,
           /Chair/i,
           /Loveseat/i,
           /Couch/i,
@@ -105,7 +107,7 @@ describe("SeatCanvas - Property 23: Keyboard Shortcuts Trigger Correct Actions (
         fireEvent.keyDown(window, { key: "ArrowLeft" });
 
         // Expected: move to previous icon linearly with wrap-around
-        const expectedIndex = (startIconIndex - 1 + 4) % 4;
+        const expectedIndex = (startIconIndex - 1 + 5) % 5;
         const expectedIcon = screen.getByLabelText(iconLabels[expectedIndex]);
         expect(expectedIcon.getAttribute("aria-pressed")).toBe("true");
 
@@ -123,11 +125,12 @@ describe("SeatCanvas - Property 23: Keyboard Shortcuts Trigger Correct Actions (
    */
   it("Property: Down Arrow Key Moves Down in 2-Column Grid", () => {
     fc.assert(
-      fc.property(fc.integer({ min: 0, max: 3 }), (startIconIndex: number) => {
+      fc.property(fc.integer({ min: 0, max: 4 }), (startIconIndex: number) => {
         const { unmount } = render(<SeatCanvasWithProviders />);
 
         const iconLabels = [
           /Round Table \(4-top\)/i,
+          /Square Table \(4-top\)/i,
           /Chair/i,
           /Loveseat/i,
           /Couch/i,
@@ -144,7 +147,7 @@ describe("SeatCanvas - Property 23: Keyboard Shortcuts Trigger Correct Actions (
 
         // Expected: move down 2 positions (next row in 2-column grid)
         // [0] -> [2], [1] -> [3], [2] -> [0] (wrap), [3] -> [1] (wrap)
-        const expectedIndex = (startIconIndex + 2) % 4;
+        const expectedIndex = (startIconIndex + 2) % 5;
         const expectedIcon = screen.getByLabelText(iconLabels[expectedIndex]);
         expect(expectedIcon.getAttribute("aria-pressed")).toBe("true");
 
@@ -162,11 +165,12 @@ describe("SeatCanvas - Property 23: Keyboard Shortcuts Trigger Correct Actions (
    */
   it("Property: Up Arrow Key Moves Up in 2-Column Grid", () => {
     fc.assert(
-      fc.property(fc.integer({ min: 0, max: 3 }), (startIconIndex: number) => {
+      fc.property(fc.integer({ min: 0, max: 4 }), (startIconIndex: number) => {
         const { unmount } = render(<SeatCanvasWithProviders />);
 
         const iconLabels = [
           /Round Table \(4-top\)/i,
+          /Square Table \(4-top\)/i,
           /Chair/i,
           /Loveseat/i,
           /Couch/i,
@@ -183,7 +187,7 @@ describe("SeatCanvas - Property 23: Keyboard Shortcuts Trigger Correct Actions (
 
         // Expected: move up 2 positions (previous row in 2-column grid)
         // [0] -> [2] (wrap), [1] -> [3] (wrap), [2] -> [0], [3] -> [1]
-        const expectedIndex = (startIconIndex - 2 + 4) % 4;
+        const expectedIndex = (startIconIndex - 2 + 5) % 5;
         const expectedIcon = screen.getByLabelText(iconLabels[expectedIndex]);
         expect(expectedIcon.getAttribute("aria-pressed")).toBe("true");
 
@@ -348,6 +352,7 @@ describe("SeatCanvas - Property 23: Keyboard Shortcuts Trigger Correct Actions (
 
           const iconLabels = [
             /Round Table \(4-top\)/i,
+            /Square Table \(4-top\)/i,
             /Chair/i,
             /Loveseat/i,
             /Couch/i,
@@ -361,13 +366,13 @@ describe("SeatCanvas - Property 23: Keyboard Shortcuts Trigger Correct Actions (
             fireEvent.keyDown(window, { key });
 
             if (key === "ArrowRight") {
-              currentIconIndex = (currentIconIndex + 1) % 4;
+              currentIconIndex = (currentIconIndex + 1) % 5;
             } else if (key === "ArrowLeft") {
-              currentIconIndex = (currentIconIndex - 1 + 4) % 4;
+              currentIconIndex = (currentIconIndex - 1 + 5) % 5;
             } else if (key === "ArrowDown") {
-              currentIconIndex = (currentIconIndex + 2) % 4;
+              currentIconIndex = (currentIconIndex + 2) % 5;
             } else if (key === "ArrowUp") {
-              currentIconIndex = (currentIconIndex - 2 + 4) % 4;
+              currentIconIndex = (currentIconIndex - 2 + 5) % 5;
             } else if (key === "r") {
               currentRotationIndex = (currentRotationIndex + 1) % 4;
             }
@@ -397,13 +402,14 @@ describe("SeatCanvas - Property 23: Keyboard Shortcuts Trigger Correct Actions (
   it("Property: Icon Bank Highlight Updates with Keyboard Navigation (Requirement 9.5)", () => {
     fc.assert(
       fc.property(
-        fc.integer({ min: 0, max: 3 }),
+        fc.integer({ min: 0, max: 4 }),
         fc.integer({ min: 1, max: 3 }),
         (startIndex: number, numDownPresses: number) => {
           const { unmount } = render(<SeatCanvasWithProviders />);
 
           const iconLabels = [
             /Round Table \(4-top\)/i,
+            /Square Table \(4-top\)/i,
             /Chair/i,
             /Loveseat/i,
             /Couch/i,
@@ -419,7 +425,7 @@ describe("SeatCanvas - Property 23: Keyboard Shortcuts Trigger Correct Actions (
           let expectedIndex = startIndex;
           for (let i = 0; i < numDownPresses; i++) {
             fireEvent.keyDown(window, { key: "ArrowDown" });
-            expectedIndex = (expectedIndex + 2) % 4;
+            expectedIndex = (expectedIndex + 2) % 5;
           }
 
           // Verify final selection
@@ -465,6 +471,7 @@ describe("SeatCanvas - Property 23: Keyboard Shortcuts Trigger Correct Actions (
 
           const iconLabels = [
             /Round Table \(4-top\)/i,
+            /Square Table \(4-top\)/i,
             /Chair/i,
             /Loveseat/i,
             /Couch/i,

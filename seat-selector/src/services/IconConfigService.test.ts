@@ -83,8 +83,8 @@ describe('IconConfigService', () => {
   });
 
   describe('DEFAULT_ICONS Configuration', () => {
-    it('should include 4 seat types', () => {
-      expect(DEFAULT_ICONS.length).toBe(4);
+    it('should include 5 seat types', () => {
+      expect(DEFAULT_ICONS.length).toBe(5);
     });
 
     it('should have a 0-person table', () => {

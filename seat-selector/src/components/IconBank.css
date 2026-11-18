@@ -3,23 +3,24 @@
   display: flex;
   flex-direction: column;
   width: 100%;
+  height: 100%;
   background-color: var(--bg);
   border-right: 1px solid var(--border);
-  overflow-y: auto;
-  overflow-x: hidden;
-  min-height: 0;
+  overflow: hidden;
 }
 
 /* IconBank Grid Layout */
 .icon-bank-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
+  grid-auto-rows: 100px;
+  align-content: start;
   gap: 8px;
   padding: 12px;
+  overflow-y: auto;
+  overflow-x: hidden;
   flex: 1;
   min-height: 0;
-  height: 100%;
-  grid-auto-rows: minmax(100px, 1fr);
 }
 
 /* Scrollbar Styling */
