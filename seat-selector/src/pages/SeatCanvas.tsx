@@ -4,6 +4,10 @@ import { Button } from "react-bootstrap";
 import { useApp } from "../context/AppContext";
 import { RotationControls } from "../components/RotationControls";
 import { IconBank } from "../components/IconBank";
+import { SeatCountDisplay } from "../components/SeatCountDisplay";
+import { ClearAllButton } from "../components/ClearAllButton";
+import { SaveButton } from "../components/SaveButton";
+import { AddGuestsButton } from "../components/AddGuestsButton";
 import { GridCanvas } from "../components/canvas";
 import { iconConfigService } from "../services/IconConfigService";
 import { GRID_SQUARE_SIZE_PX } from "../constants/gridConstants";
@@ -39,6 +43,7 @@ export default function SeatCanvas() {
     seats,
     addSeat,
     removeSeat,
+    clearAllSeats,
     updateSeatNumbers,
   } = useApp();
   const icons = iconConfigService.getAllConfigs();
@@ -85,12 +90,17 @@ export default function SeatCanvas() {
       }
       // A focused icon button already handles its own arrow keys. Skip it here so
       // the selection does not move twice for one key press.
-      if (event.target instanceof Element && event.target.closest(".icon-item")) {
+      if (
+        event.target instanceof Element &&
+        event.target.closest(".icon-item")
+      ) {
         return;
       }
 
       const count = icons.length;
-      const currentIndex = icons.findIndex((icon) => icon.id === selectedIconId);
+      const currentIndex = icons.findIndex(
+        (icon) => icon.id === selectedIconId,
+      );
       let nextIndex: number | null = null;
 
       // Two columns: left/right move one icon, up/down move one row (two icons).
@@ -119,22 +129,14 @@ export default function SeatCanvas() {
     return () => window.removeEventListener("keydown", handleIconBankArrowKeys);
   }, [icons, selectedIconId, setSelectedIcon]);
 
-  const handleAddGuests = () => {
-    setCurrentPage("guests");
-    navigate("/arrangement");
-  };
-
   const handleBackHome = () => {
     setCurrentPage("home");
     navigate("/");
   };
 
-  // Calculate total seat capacity across all placed icons
-  const calculateTotalCapacity = () => {
-    return seats.reduce((total, seat) => {
-      const iconConfig = iconConfigs.get(seat.iconId);
-      return total + (iconConfig?.capacity || 0);
-    }, 0);
+  // Clear All: removes every seat from the canvas (runs after confirmation)
+  const handleClearAll = () => {
+    clearAllSeats();
   };
 
   // Seat placement handler - creates seat at grid-quantized position
@@ -284,8 +286,6 @@ export default function SeatCanvas() {
     offsetY: 0,
   };
 
-  const totalCapacity = calculateTotalCapacity();
-
   return (
     <div className="seat-canvas-page">
       {/* ====== HEADER SECTION ====== */}
@@ -345,38 +345,16 @@ export default function SeatCanvas() {
       {/* ====== FOOTER SECTION ====== */}
       <footer className="canvas-footer">
         <div className="footer-left">
-          <span className="seat-count-text">Seats: {totalCapacity}</span>
+          <SeatCountDisplay count={seats.length} />
         </div>
 
         <div className="footer-center">
-          <Button
-            variant="outline-secondary"
-            size="sm"
-            aria-label="Clear all seats from canvas"
-            className="me-2"
-          >
-            Clear All
-          </Button>
-          <Button
-            variant="outline-secondary"
-            size="sm"
-            disabled
-            title="Save functionality coming in Phase 2"
-            aria-label="Save configuration (Phase 2)"
-          >
-            Save
-          </Button>
+          <ClearAllButton onConfirm={handleClearAll} />
+          <SaveButton />
         </div>
 
         <div className="footer-right">
-          <Button
-            variant="primary"
-            size="sm"
-            onClick={handleAddGuests}
-            aria-label="Navigate to guest arrangement page"
-          >
-            Add Guests
-          </Button>
+          <AddGuestsButton />
         </div>
       </footer>
     </div>
