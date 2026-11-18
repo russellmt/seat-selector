@@ -227,26 +227,26 @@ Build the Seat Canvas page with grid rendering, icon selection, seat placement/d
     - **Validates: Requirements 41.1, 41.2, 41.3**
 
 - [x] 16. Implement footer controls for Seat Canvas
-  - [ ] 16.1 Create SeatCountDisplay component
+  - [x] 16.1 Create SeatCountDisplay component
     - Display total number of seats
     - Update in real-time when seats added/removed
     - _Requirements: 15.1, 15.2, 15.3_
-  - [ ] 16.2 Create ClearAllButton (Seat Canvas)
+  - [x] 16.2 Create ClearAllButton (Seat Canvas)
     - Display "Clear All" button
     - Show confirmation dialog on click
     - Remove all seats from canvas on confirmation
     - _Requirements: 14.1, 14.2, 14.3_
-  - [ ] 16.3 Create SaveButton placeholder (Seat Canvas)
+  - [x] 16.3 Create SaveButton placeholder (Seat Canvas)
     - Display "Save" button (non-functional in Phase 1)
     - Show tooltip explaining Phase 1 limitation
     - _Requirements: 17.1, 17.2, 17.3_
-  - [ ] 16.4 Create AddGuestsButton
+  - [x] 16.4 Create AddGuestsButton
     - Display "Add Guests" button at bottom right
     - Navigate to GuestArrangement page on click
     - Pass seat configuration via AppContext
     - _Requirements: 16.1, 16.2, 16.3_
 
-- [ ] 17. Checkpoint - Seat Canvas Complete
+- [x] 17. Checkpoint - Seat Canvas Complete
   - Ensure seat placement, deletion, and numbering work correctly
   - Verify icon selection and rotation persists
   - Verify preview updates smoothly on hover
