@@ -200,7 +200,9 @@
   overflow: hidden;
 }
 
-.canvas-content .grid-canvas {
+/* Direct child only: the <svg> inside GridCanvas also has the class "grid-canvas",
+   and must keep its own height (rows x square size) instead of stretching. */
+.canvas-content > .grid-canvas {
   flex: 1;
   height: 100%;
 }

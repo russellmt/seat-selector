@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "react-bootstrap";
 import { useApp } from "../context/AppContext";
@@ -12,6 +12,9 @@ import { createSeat } from "../types/Seat";
 import type { GridPosition } from "../types/Seat";
 import type { Rotation } from "../types/Icon";
 import "./SeatCanvas.css";
+
+// Used until the canvas area has been measured (and in environments without layout).
+const DEFAULT_GRID_ROWS = 20;
 
 /**
  * SeatCanvas Page Component
@@ -46,6 +49,28 @@ export default function SeatCanvas() {
   const handleIconSelect = (iconId: string) => {
     setSelectedIcon(iconId);
   };
+
+  // Fit as many whole grid rows as the canvas area is tall, so the grid lines
+  // reach the bottom of the canvas instead of stopping at a fixed 20 rows.
+  const gridAreaRef = useRef<HTMLElement>(null);
+  const [gridRows, setGridRows] = useState(DEFAULT_GRID_ROWS);
+
+  useEffect(() => {
+    const area = gridAreaRef.current;
+    if (!area) return;
+
+    const updateRows = () => {
+      const fittingRows = Math.floor(area.clientHeight / GRID_SQUARE_SIZE_PX);
+      setGridRows(fittingRows > 0 ? fittingRows : DEFAULT_GRID_ROWS);
+    };
+
+    updateRows();
+    if (typeof ResizeObserver === "undefined") return;
+
+    const observer = new ResizeObserver(updateRows);
+    observer.observe(area);
+    return () => observer.disconnect();
+  }, []);
 
   // Requirement 9: left/right arrows select the previous/next icon in the icon bank,
   // with wrap-around, even when no icon button has focus. Up/down move one row.
@@ -253,7 +278,7 @@ export default function SeatCanvas() {
   // Grid dimensions for the canvas
   const gridDimensions = {
     cols: 30,
-    rows: 20,
+    rows: gridRows,
     squareSize: GRID_SQUARE_SIZE_PX,
     offsetX: 0,
     offsetY: 0,
@@ -301,6 +326,7 @@ export default function SeatCanvas() {
           {/* Grid Canvas Area - Integrated with child renderers */}
           <section
             className="grid-canvas"
+            ref={gridAreaRef}
             onContextMenu={handleCanvasContextMenu}
           >
             <GridCanvas
