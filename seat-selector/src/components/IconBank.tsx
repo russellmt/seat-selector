@@ -1,7 +1,7 @@
-import React, { useMemo } from 'react';
-import type { IconConfig } from '../types/Icon';
-import { GRID_SQUARE_SIZE_PX } from '../constants/gridConstants';
-import './IconBank.css';
+import React, { useMemo } from "react";
+import type { IconConfig } from "../types/Icon";
+import { GRID_SQUARE_SIZE_PX } from "../constants/gridConstants";
+import "./IconBank.css";
 
 /**
  * Props for the IconBank component
@@ -26,8 +26,8 @@ export interface IconBankProps {
  * Displays available seat icons organized by seating capacity in a 2-column grid layout.
  * Icons are sorted by ascending capacity (0-person table first, then 1-person chair, etc.).
  * Each icon displays its capacity label and is highlighted when selected.
- * 
- * Uses the same stretched rendering logic as the canvas (SVG image element with 
+ *
+ * Uses the same stretched rendering logic as the canvas (SVG image element with
  * preserveAspectRatio="none") to ensure visual consistency across the application.
  *
  * Features:
@@ -75,15 +75,18 @@ export const IconBank: React.FC<IconBankProps> = ({
   const handleKeyDown = (event: React.KeyboardEvent, index: number) => {
     const iconCount = sortedIcons.length;
 
-    if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
+    // Icons sit in two columns: left/right move one icon, up/down move one row (two icons).
+    if (event.key === "ArrowRight" || event.key === "ArrowDown") {
       event.preventDefault();
-      const nextIndex = (index + 1) % iconCount;
+      const step = event.key === "ArrowDown" ? 2 : 1;
+      const nextIndex = (index + step) % iconCount;
       onSelectIcon(sortedIcons[nextIndex].id);
-    } else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+    } else if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
       event.preventDefault();
-      const prevIndex = (index - 1 + iconCount) % iconCount;
+      const step = event.key === "ArrowUp" ? 2 : 1;
+      const prevIndex = (index - step + iconCount) % iconCount;
       onSelectIcon(sortedIcons[prevIndex].id);
-    } else if (event.key === 'Enter' || event.key === ' ') {
+    } else if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
       onSelectIcon(sortedIcons[index].id);
     }
@@ -91,7 +94,7 @@ export const IconBank: React.FC<IconBankProps> = ({
 
   const getCapacityLabel = (capacity: number): string => {
     if (capacity === 0) {
-      return 'Table';
+      return "Table";
     }
     return `Capacity: ${capacity}`;
   };
@@ -108,7 +111,7 @@ export const IconBank: React.FC<IconBankProps> = ({
           return (
             <div
               key={icon.id}
-              className={`icon-item ${isSelected ? 'selected' : ''}`}
+              className={`icon-item ${isSelected ? "selected" : ""}`}
               onClick={() => handleIconClick(icon.id)}
               onKeyDown={(e) => handleKeyDown(e, index)}
               tabIndex={isSelected ? 0 : -1}
@@ -118,9 +121,7 @@ export const IconBank: React.FC<IconBankProps> = ({
               title={`${icon.name}\n${getCapacityLabel(icon.capacity)}`}
             >
               <div className="icon-button-content">
-                <div
-                  className="icon-display"
-                >
+                <div className="icon-display">
                   {/* Render icon using SVG image element with same stretching logic as canvas */}
                   <svg
                     width={iconWidthPixels}
@@ -128,7 +129,7 @@ export const IconBank: React.FC<IconBankProps> = ({
                     viewBox={`0 0 ${icon.size.width} ${icon.size.height}`}
                     preserveAspectRatio="none"
                     style={{
-                      display: 'block',
+                      display: "block",
                     }}
                   >
                     <image
@@ -137,11 +138,17 @@ export const IconBank: React.FC<IconBankProps> = ({
                       y="0"
                       width={icon.size.width}
                       height={icon.size.height}
-                      href={icon.visual.type === 'image' ? icon.visual.url : undefined}
+                      href={
+                        icon.visual.type === "image"
+                          ? icon.visual.url
+                          : undefined
+                      }
                     />
                   </svg>
                 </div>
-                <div className="icon-label">{getCapacityLabel(icon.capacity)}</div>
+                <div className="icon-label">
+                  {getCapacityLabel(icon.capacity)}
+                </div>
               </div>
             </div>
           );

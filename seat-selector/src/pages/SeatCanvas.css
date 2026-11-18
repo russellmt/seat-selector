@@ -47,20 +47,31 @@
 .canvas-main {
   flex: 1;
   display: flex;
+  align-items: stretch;
   gap: 0;
   overflow: hidden;
   background: var(--bg);
   min-height: 0;
 }
 
-/* Icon Bank Sidebar */
-.icon-bank {
+/* Icon Bank Sidebar wrapper (the <aside>).
+   The IconBank component's root element already uses the class "icon-bank",
+   so this wrapper must not share that class or the rules hit both elements. */
+.icon-bank-sidebar {
   flex: 0 0 280px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
   border-right: 1px solid var(--border);
   background: var(--bg);
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: hidden;
   box-sizing: border-box;
+}
+
+/* The IconBank root fills the sidebar's height */
+.icon-bank-sidebar > .icon-bank {
+  flex: 1;
+  min-height: 0;
 }
 
 .icon-bank-placeholder {
@@ -150,7 +161,7 @@
     justify-content: center;
   }
 
-  .icon-bank {
+  .icon-bank-sidebar {
     flex: 0 0 200px;
   }
 }
@@ -168,10 +179,8 @@
     flex-direction: column;
   }
 
-  .icon-bank {
+  .icon-bank-sidebar {
     flex: 0 0 150px;
-    border-right: none;
-    border-bottom: 1px solid var(--border);
   }
 }
 
@@ -181,4 +190,19 @@
   font-weight: 500;
   color: var(--text-h);
   padding: 0;
+}
+
+/* Content wrapper for IconBank and GridCanvas */
+.canvas-content {
+  display: flex;
+  gap: 0;
+  height: 65vh;
+  overflow: hidden;
+}
+
+/* Direct child only: the <svg> inside GridCanvas also has the class "grid-canvas",
+   and must keep its own height (rows x square size) instead of stretching. */
+.canvas-content > .grid-canvas {
+  flex: 1;
+  height: 100%;
 }

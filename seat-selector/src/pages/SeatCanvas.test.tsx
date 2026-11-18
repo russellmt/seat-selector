@@ -309,9 +309,9 @@ describe('SeatCanvas Page - Icon Selection and Highlighting (Task 10.2)', () => 
       // Press right arrow key to move to next icon
       fireEvent.keyDown(tableButton, { key: 'ArrowRight' });
       
-      // The next icon (chair) should be highlighted
-      const chairButton = screen.getByLabelText(/Chair/i);
-      expect(chairButton.getAttribute('aria-pressed')).toBe('true');
+      // The next icon in the sorted list is the square table (both capacity-0 tables sort first)
+      const squareTableButton = screen.getByLabelText(/Square Table \(4-top\)/i);
+      expect(squareTableButton.getAttribute('aria-pressed')).toBe('true');
     });
 
     it('should allow left arrow key to select previous icon', () => {

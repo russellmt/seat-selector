@@ -1,16 +1,20 @@
-import { useNavigate } from 'react-router-dom';
-import { Button } from 'react-bootstrap';
-import { useApp } from '../context/AppContext';
-import { RotationControls } from '../components/RotationControls';
-import { IconBank } from '../components/IconBank';
-import { GridCanvas } from '../components/canvas';
-import { iconConfigService } from '../services/IconConfigService';
-import { GRID_SQUARE_SIZE_PX } from '../constants/gridConstants';
-import { hasCollision, findSeatsInPath } from '../utils/collision';
-import { createSeat } from '../types/Seat';
-import type { GridPosition } from '../types/Seat';
-import type { Rotation } from '../types/Icon';
-import './SeatCanvas.css';
+import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "react-bootstrap";
+import { useApp } from "../context/AppContext";
+import { RotationControls } from "../components/RotationControls";
+import { IconBank } from "../components/IconBank";
+import { GridCanvas } from "../components/canvas";
+import { iconConfigService } from "../services/IconConfigService";
+import { GRID_SQUARE_SIZE_PX } from "../constants/gridConstants";
+import { hasCollision, findSeatsInPath } from "../utils/collision";
+import { createSeat } from "../types/Seat";
+import type { GridPosition } from "../types/Seat";
+import type { Rotation } from "../types/Icon";
+import "./SeatCanvas.css";
+
+// Used until the canvas area has been measured (and in environments without layout).
+const DEFAULT_GRID_ROWS = 20;
 
 /**
  * SeatCanvas Page Component
@@ -24,13 +28,13 @@ import './SeatCanvas.css';
  * **Validates: Requirements 1.1, 3.1, 5.1, 5.2, 5.3, 5.4, 14.1, 15.1, 16.1**
  */
 export default function SeatCanvas() {
-  console.log('[SeatCanvas] Component loaded and rendering');
+  console.log("[SeatCanvas] Component loaded and rendering");
   const navigate = useNavigate();
-  const { 
-    setCurrentPage, 
-    selectedIconId, 
-    setSelectedIcon, 
-    selectedRotation, 
+  const {
+    setCurrentPage,
+    selectedIconId,
+    setSelectedIcon,
+    selectedRotation,
     setRotation,
     seats,
     addSeat,
@@ -38,24 +42,91 @@ export default function SeatCanvas() {
     updateSeatNumbers,
   } = useApp();
   const icons = iconConfigService.getAllConfigs();
-  
+
   // Create a map of icon configs for the canvas
-  const iconConfigs = new Map(
-    icons.map(icon => [icon.id, icon])
-  );
+  const iconConfigs = new Map(icons.map((icon) => [icon.id, icon]));
 
   const handleIconSelect = (iconId: string) => {
     setSelectedIcon(iconId);
   };
 
+  // Fit as many whole grid rows as the canvas area is tall, so the grid lines
+  // reach the bottom of the canvas instead of stopping at a fixed 20 rows.
+  const gridAreaRef = useRef<HTMLElement>(null);
+  const [gridRows, setGridRows] = useState(DEFAULT_GRID_ROWS);
+
+  useEffect(() => {
+    const area = gridAreaRef.current;
+    if (!area) return;
+
+    const updateRows = () => {
+      const fittingRows = Math.floor(area.clientHeight / GRID_SQUARE_SIZE_PX);
+      setGridRows(fittingRows > 0 ? fittingRows : DEFAULT_GRID_ROWS);
+    };
+
+    updateRows();
+    if (typeof ResizeObserver === "undefined") return;
+
+    const observer = new ResizeObserver(updateRows);
+    observer.observe(area);
+    return () => observer.disconnect();
+  }, []);
+
+  // Requirement 9: left/right arrows select the previous/next icon in the icon bank,
+  // with wrap-around, even when no icon button has focus. Up/down move one row.
+  // IconBank handles arrow keys when an icon button has focus.
+  useEffect(() => {
+    const handleIconBankArrowKeys = (event: KeyboardEvent) => {
+      if (
+        event.target instanceof HTMLInputElement ||
+        event.target instanceof HTMLTextAreaElement
+      ) {
+        return;
+      }
+      // A focused icon button already handles its own arrow keys. Skip it here so
+      // the selection does not move twice for one key press.
+      if (event.target instanceof Element && event.target.closest(".icon-item")) {
+        return;
+      }
+
+      const count = icons.length;
+      const currentIndex = icons.findIndex((icon) => icon.id === selectedIconId);
+      let nextIndex: number | null = null;
+
+      // Two columns: left/right move one icon, up/down move one row (two icons).
+      switch (event.key) {
+        case "ArrowRight":
+          nextIndex = (currentIndex + 1) % count;
+          break;
+        case "ArrowDown":
+          nextIndex = (currentIndex + 2) % count;
+          break;
+        case "ArrowLeft":
+          nextIndex = (currentIndex - 1 + count) % count;
+          break;
+        case "ArrowUp":
+          nextIndex = (currentIndex - 2 + count) % count;
+          break;
+      }
+
+      if (nextIndex !== null) {
+        event.preventDefault();
+        setSelectedIcon(icons[nextIndex].id);
+      }
+    };
+
+    window.addEventListener("keydown", handleIconBankArrowKeys);
+    return () => window.removeEventListener("keydown", handleIconBankArrowKeys);
+  }, [icons, selectedIconId, setSelectedIcon]);
+
   const handleAddGuests = () => {
-    setCurrentPage('guests');
-    navigate('/arrangement');
+    setCurrentPage("guests");
+    navigate("/arrangement");
   };
 
   const handleBackHome = () => {
-    setCurrentPage('home');
-    navigate('/');
+    setCurrentPage("home");
+    navigate("/");
   };
 
   // Calculate total seat capacity across all placed icons
@@ -69,33 +140,61 @@ export default function SeatCanvas() {
   // Seat placement handler - creates seat at grid-quantized position
   // Checks for collisions with existing seats (accounting for rotation)
   // Recalculates seat numbers after each placement
-  const handleSeatAdd = (position: GridPosition, iconId: string, rotation: Rotation) => {
-    console.log('[SeatCanvas] handleSeatAdd called:', { position, iconId, rotation, selectedIconId });
+  const handleSeatAdd = (
+    position: GridPosition,
+    iconId: string,
+    rotation: Rotation,
+  ) => {
+    console.log("[SeatCanvas] handleSeatAdd called:", {
+      position,
+      iconId,
+      rotation,
+      selectedIconId,
+    });
     // Get the icon configuration to check size and validate placement
     const iconConfig = iconConfigs.get(iconId);
-    console.log('[SeatCanvas] icon config found:', !!iconConfig);
+    console.log("[SeatCanvas] icon config found:", !!iconConfig);
     if (!iconConfig) {
-      console.log('[SeatCanvas] No icon config found for', iconId);
+      console.log("[SeatCanvas] No icon config found for", iconId);
       return;
     }
-    
+
     // Check for collisions with existing seats (rotation-aware)
-    console.log('[SeatCanvas] Checking collision at', position, 'with size', iconConfig.size, 'rotation', rotation, 'and', seats.length, 'existing seats');
-    if (hasCollision(position, iconConfig.size, seats, gridDimensions, rotation, iconConfigs)) {
+    console.log(
+      "[SeatCanvas] Checking collision at",
+      position,
+      "with size",
+      iconConfig.size,
+      "rotation",
+      rotation,
+      "and",
+      seats.length,
+      "existing seats",
+    );
+    if (
+      hasCollision(
+        position,
+        iconConfig.size,
+        seats,
+        gridDimensions,
+        rotation,
+        iconConfigs,
+      )
+    ) {
       // Prevent placement if collision detected
-      console.log('[SeatCanvas] Collision detected, aborting placement');
+      console.log("[SeatCanvas] Collision detected, aborting placement");
       return;
     }
-    console.log('[SeatCanvas] No collision, proceeding with seat creation');
-    
+    console.log("[SeatCanvas] No collision, proceeding with seat creation");
+
     // Create new seat with generated ID
     const newSeat = createSeat(iconId, position, rotation);
-    console.log('[SeatCanvas] Created seat:', newSeat);
-    
+    console.log("[SeatCanvas] Created seat:", newSeat);
+
     // Add to AppContext state
     addSeat(newSeat);
-    console.log('[SeatCanvas] Seat added to AppContext');
-    
+    console.log("[SeatCanvas] Seat added to AppContext");
+
     // Recalculate seat numbering after placement
     // Note: This is called for each seat in a drag operation
     // An optimization would be to batch updates, but this ensures correctness
@@ -103,40 +202,50 @@ export default function SeatCanvas() {
   };
 
   const handleSeatRemove = (positions: GridPosition[]) => {
-    console.log('[SeatCanvas.handleSeatRemove] START with positions:', JSON.stringify(positions));
+    console.log(
+      "[SeatCanvas.handleSeatRemove] START with positions:",
+      JSON.stringify(positions),
+    );
     // Find all seats that occupy any of the grid positions in the path
     // This handles both single-click deletion and drag-to-delete
-    console.log('[SeatCanvas] handleSeatRemove called with positions:', positions);
-    
+    console.log(
+      "[SeatCanvas] handleSeatRemove called with positions:",
+      positions,
+    );
+
     // Use the findSeatsInPath utility to find all seats in the deletion path
     const seatsToRemove = findSeatsInPath(positions, seats, iconConfigs);
-    console.log('[SeatCanvas] Found seats to remove:', seatsToRemove.length, seatsToRemove);
-    
+    console.log(
+      "[SeatCanvas] Found seats to remove:",
+      seatsToRemove.length,
+      seatsToRemove,
+    );
+
     if (seatsToRemove.length === 0) {
-      console.log('[SeatCanvas] No seats found to remove');
+      console.log("[SeatCanvas] No seats found to remove");
       return;
     }
-    
+
     // Remove all found seats
     seatsToRemove.forEach((seat) => {
-      console.log('[SeatCanvas] Removing seat:', seat.id);
+      console.log("[SeatCanvas] Removing seat:", seat.id);
       removeSeat(seat.id);
     });
-    
+
     // Recalculate seat numbers after deletion
     // This ensures remaining seats are renumbered in order
-    console.log('[SeatCanvas] Recalculating seat numbers');
+    console.log("[SeatCanvas] Recalculating seat numbers");
     updateSeatNumbers();
   };
 
   const handleCanvasContextMenu = (event: React.MouseEvent<HTMLElement>) => {
     event.preventDefault();
-    console.log('[SeatCanvas] Context menu on canvas container');
-    
+    console.log("[SeatCanvas] Context menu on canvas container");
+
     // Get the SVG element
-    const svg = document.querySelector('svg.grid-canvas') as SVGSVGElement;
+    const svg = document.querySelector("svg.grid-canvas") as SVGSVGElement;
     if (!svg) {
-      console.log('[SeatCanvas] SVG element not found');
+      console.log("[SeatCanvas] SVG element not found");
       return;
     }
 
@@ -149,9 +258,19 @@ export default function SeatCanvas() {
     const col = Math.floor(pixelX / gridDimensions.squareSize);
     const row = Math.floor(pixelY / gridDimensions.squareSize);
 
-    console.log('[SeatCanvas] Right-click context menu at pixel:', { pixelX, pixelY }, 'grid:', { col, row });
+    console.log(
+      "[SeatCanvas] Right-click context menu at pixel:",
+      { pixelX, pixelY },
+      "grid:",
+      { col, row },
+    );
 
-    if (col >= 0 && col < gridDimensions.cols && row >= 0 && row < gridDimensions.rows) {
+    if (
+      col >= 0 &&
+      col < gridDimensions.cols &&
+      row >= 0 &&
+      row < gridDimensions.rows
+    ) {
       handleSeatRemove([{ col, row }]);
     }
   };
@@ -159,7 +278,7 @@ export default function SeatCanvas() {
   // Grid dimensions for the canvas
   const gridDimensions = {
     cols: 30,
-    rows: 20,
+    rows: gridRows,
     squareSize: GRID_SQUARE_SIZE_PX,
     offsetX: 0,
     offsetY: 0,
@@ -172,7 +291,7 @@ export default function SeatCanvas() {
       {/* ====== HEADER SECTION ====== */}
       <header className="canvas-header">
         <div className="header-content">
-          <Button 
+          <Button
             variant="outline-secondary"
             size="sm"
             onClick={handleBackHome}
@@ -181,11 +300,11 @@ export default function SeatCanvas() {
           >
             ← Back
           </Button>
-          
+
           <h1 className="m-0">Seat Canvas</h1>
-          
+
           {/* Rotation controls */}
-          <RotationControls 
+          <RotationControls
             currentRotation={selectedRotation}
             onRotate={setRotation}
           />
@@ -194,39 +313,43 @@ export default function SeatCanvas() {
 
       {/* ====== MAIN AREA ====== */}
       <main className="canvas-main">
-        {/* Icon Bank Sidebar - Task 10.2: Icon selection and highlighting */}
-        <aside className="icon-bank">
-          <IconBank
-            icons={icons}
-            selectedIconId={selectedIconId}
-            onSelectIcon={handleIconSelect}
-          />
-        </aside>
+        <div className="canvas-content">
+          {/* Icon Bank Sidebar - Task 10.2: Icon selection and highlighting */}
+          <aside className="icon-bank-sidebar">
+            <IconBank
+              icons={icons}
+              selectedIconId={selectedIconId}
+              onSelectIcon={handleIconSelect}
+            />
+          </aside>
 
-        {/* Grid Canvas Area - Integrated with child renderers */}
-        <section className="grid-canvas" onContextMenu={handleCanvasContextMenu}>
-          <GridCanvas
-            seats={seats}
-            selectedIconId={selectedIconId}
-            selectedRotation={selectedRotation}
-            onSeatAdd={handleSeatAdd}
-            onSeatRemove={handleSeatRemove}
-            iconConfigs={iconConfigs}
-            gridDimensions={gridDimensions}
-          />
-        </section>
+          {/* Grid Canvas Area - Integrated with child renderers */}
+          <section
+            className="grid-canvas"
+            ref={gridAreaRef}
+            onContextMenu={handleCanvasContextMenu}
+          >
+            <GridCanvas
+              seats={seats}
+              selectedIconId={selectedIconId}
+              selectedRotation={selectedRotation}
+              onSeatAdd={handleSeatAdd}
+              onSeatRemove={handleSeatRemove}
+              iconConfigs={iconConfigs}
+              gridDimensions={gridDimensions}
+            />
+          </section>
+        </div>
       </main>
 
       {/* ====== FOOTER SECTION ====== */}
       <footer className="canvas-footer">
         <div className="footer-left">
-          <span className="seat-count-text">
-            Seats: {totalCapacity}
-          </span>
+          <span className="seat-count-text">Seats: {totalCapacity}</span>
         </div>
 
         <div className="footer-center">
-          <Button 
+          <Button
             variant="outline-secondary"
             size="sm"
             aria-label="Clear all seats from canvas"
@@ -234,7 +357,7 @@ export default function SeatCanvas() {
           >
             Clear All
           </Button>
-          <Button 
+          <Button
             variant="outline-secondary"
             size="sm"
             disabled
@@ -246,7 +369,7 @@ export default function SeatCanvas() {
         </div>
 
         <div className="footer-right">
-          <Button 
+          <Button
             variant="primary"
             size="sm"
             onClick={handleAddGuests}
