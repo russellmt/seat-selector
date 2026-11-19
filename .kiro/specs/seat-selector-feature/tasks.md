@@ -262,20 +262,20 @@ Build the Guest Arrangement page with guest management, assignment logic, bulk o
 
 ---
 
-- [ ] 18. Create guest list panel component
-  - [ ] 18.1 Build GuestListPanel with 2-column grid layout
+- [x] 18. Create guest list panel component
+  - [x] 18.1 Build GuestListPanel with 2-column grid layout
     - Display guests in similar grid layout to IconBank
     - Show guest color circle with initials
     - Implement scrollable container
     - _Requirements: 20.1, 20.2, 20.3, 20.4, 20.5, 20.6_
-  - [ ] 18.2 Implement add guest functionality
+  - [x] 18.2 Implement add guest functionality
     - Display "+" button at top of guest list
     - Create AddGuestInput modal/inline form
     - Validate non-empty guest name
     - Generate color and initials on submission
     - Add guest to AppContext state
     - _Requirements: 21.1, 21.2, 21.3, 21.4, 21.5_
-  - [ ] 18.3 Write property tests for guest addition
+  - [x] 18.3 Write property tests for guest addition
     - **Property 9: Non-Empty Guest Name Can Be Added**
     - **Validates: Requirements 21.1, 21.2, 21.3, 21.4, 21.5**
 
@@ -332,7 +332,7 @@ Build the Guest Arrangement page with guest management, assignment logic, bulk o
     - **Validates: Requirements 26.1, 26.2, 26.3, 26.4, 26.5**
 
 - [ ] 23. Create GuestArrangement page and header
-  - [ ] 23.1 Build GuestArrangement page layout
+  - [x] 23.1 Build GuestArrangement page layout
     - Create header, main area (guest list + canvas), footer layout
     - Set up state management connection
     - _Requirements: 18.1, 18.2, 19.1, 27.1_
@@ -416,7 +416,7 @@ Build the Guest Arrangement page with guest management, assignment logic, bulk o
     - Display "Save" button (non-functional in Phase 1)
     - Show tooltip explaining Phase 1 limitation
     - _Requirements: 35.1, 35.2, 35.3_
-  - [ ] 27.5 Create BackButton
+  - [x] 27.5 Create BackButton
     - Display "Back" button to return to Seat Canvas
     - Navigate to SeatCanvas page on click
     - Preserve seat configuration and guest list
