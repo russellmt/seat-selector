@@ -1,0 +1,46 @@
+/* AddGuestInput - inline form shown under the "+" button in the guest list */
+.add-guest-input {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.add-guest-input-field {
+  width: 100%;
+  padding: 6px 8px;
+  font-size: 13px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background-color: var(--bg);
+  color: var(--text-h);
+  box-sizing: border-box;
+}
+
+.add-guest-input-field[aria-invalid='true'] {
+  border-color: #c0392b;
+}
+
+.add-guest-input-error {
+  font-size: 12px;
+  color: #c0392b;
+}
+
+.add-guest-input-actions {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+.add-guest-input-actions button {
+  padding: 4px 10px;
+  font-size: 12px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background-color: var(--bg);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.add-guest-input-submit {
+  font-weight: 600;
+}

@@ -955,6 +955,16 @@
         "executionId": "79e87284-889b-4d73-959e-38d0e30a1064",
         "chatSessionId": "sess_6cbf1de5-eac2-4184-9ad2-b16ac7198acd",
         "timestamp": 1793829847336
+      },
+      {
+        "executionId": "01a92fa4-d4fd-46d1-a0d9-08126274ebc6",
+        "chatSessionId": "sess_6a4bb19d-d853-4ec2-ab4e-0470a80566f5",
+        "timestamp": 1795124420199
+      },
+      {
+        "executionId": "01a92fa4-d4fd-46d1-a0d9-08126274ebc6",
+        "chatSessionId": "sess_6a4bb19d-d853-4ec2-ab4e-0470a80566f5",
+        "timestamp": 1795124625650
       }
     ],
     "18.2 Implement add guest functionality": [
@@ -967,6 +977,16 @@
         "executionId": "79e87284-889b-4d73-959e-38d0e30a1064",
         "chatSessionId": "sess_6cbf1de5-eac2-4184-9ad2-b16ac7198acd",
         "timestamp": 1793829847364
+      },
+      {
+        "executionId": "01a92fa4-d4fd-46d1-a0d9-08126274ebc6",
+        "chatSessionId": "sess_6a4bb19d-d853-4ec2-ab4e-0470a80566f5",
+        "timestamp": 1795124625875
+      },
+      {
+        "executionId": "01a92fa4-d4fd-46d1-a0d9-08126274ebc6",
+        "chatSessionId": "sess_6a4bb19d-d853-4ec2-ab4e-0470a80566f5",
+        "timestamp": 1795124778447
       }
     ],
     "18.3 Write property tests for guest addition": [
@@ -979,6 +999,16 @@
         "executionId": "79e87284-889b-4d73-959e-38d0e30a1064",
         "chatSessionId": "sess_6cbf1de5-eac2-4184-9ad2-b16ac7198acd",
         "timestamp": 1793829847397
+      },
+      {
+        "executionId": "01a92fa4-d4fd-46d1-a0d9-08126274ebc6",
+        "chatSessionId": "sess_6a4bb19d-d853-4ec2-ab4e-0470a80566f5",
+        "timestamp": 1795124778799
+      },
+      {
+        "executionId": "01a92fa4-d4fd-46d1-a0d9-08126274ebc6",
+        "chatSessionId": "sess_6a4bb19d-d853-4ec2-ab4e-0470a80566f5",
+        "timestamp": 1795124912691
       }
     ],
     "19.1 Implement guest entry selection": [
@@ -1111,6 +1141,16 @@
         "executionId": "79e87284-889b-4d73-959e-38d0e30a1064",
         "chatSessionId": "sess_6cbf1de5-eac2-4184-9ad2-b16ac7198acd",
         "timestamp": 1793829847768
+      },
+      {
+        "executionId": "6aad6e78-a036-4759-8934-5d2dde62bd79",
+        "chatSessionId": "sess_6a4bb19d-d853-4ec2-ab4e-0470a80566f5",
+        "timestamp": 1795125774106
+      },
+      {
+        "executionId": "6aad6e78-a036-4759-8934-5d2dde62bd79",
+        "chatSessionId": "sess_6a4bb19d-d853-4ec2-ab4e-0470a80566f5",
+        "timestamp": 1795125885996
       }
     ],
     "23.2 Implement ArrangementNameInput component": [
@@ -1303,6 +1343,16 @@
         "executionId": "79e87284-889b-4d73-959e-38d0e30a1064",
         "chatSessionId": "sess_6cbf1de5-eac2-4184-9ad2-b16ac7198acd",
         "timestamp": 1793829848241
+      },
+      {
+        "executionId": "e0a7f0a0-8f0f-4091-b747-221193acd2ba",
+        "chatSessionId": "sess_6a4bb19d-d853-4ec2-ab4e-0470a80566f5",
+        "timestamp": 1795125281390
+      },
+      {
+        "executionId": "e0a7f0a0-8f0f-4091-b747-221193acd2ba",
+        "chatSessionId": "sess_6a4bb19d-d853-4ec2-ab4e-0470a80566f5",
+        "timestamp": 1795125437992
       }
     ],
     "28. Checkpoint - Guest Arrangement Complete": [
@@ -1610,6 +1660,13 @@
         "executionId": "e540c09a-e929-4a13-8b3a-e9c71b03edda",
         "chatSessionId": "sess_1c0ba2e5-22ef-44f2-9f2c-bddf19a7058f",
         "timestamp": 1795029086499
+      }
+    ],
+    "18. Create guest list panel component": [
+      {
+        "executionId": "01a92fa4-d4fd-46d1-a0d9-08126274ebc6",
+        "chatSessionId": "sess_6a4bb19d-d853-4ec2-ab4e-0470a80566f5",
+        "timestamp": 1795124912777
       }
     ]
   }

@@ -1,0 +1,9 @@
+/* Layout comes from SeatCanvas.css (shared classes: seat-canvas-page,
+   canvas-header, canvas-main, canvas-content, icon-bank-sidebar, grid-canvas,
+   canvas-footer). Only guest-specific rules live here. */
+
+/* The GuestListPanel root fills the sidebar's height (mirrors .icon-bank-sidebar > .icon-bank) */
+.icon-bank-sidebar > .guest-list {
+  flex: 1;
+  min-height: 0;
+}
