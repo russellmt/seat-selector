@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, within, fireEvent } from "@testing-library/react";
 import { GuestListPanel } from "./GuestListPanel";
@@ -150,5 +151,93 @@ describe("GuestListPanel add guest", () => {
       "Guest name is required",
     );
     expect(screen.getByRole("textbox", { name: /guest name/i })).toBeDefined();
+  });
+});
+
+describe("GuestListPanel selection", () => {
+  const alice = makeGuest("Alice");
+  const bob = makeGuest("Bob Jones");
+  const getEntry = (name: string) =>
+    screen.getByRole("button", { name: new RegExp(name, "i") });
+  // Stateful harness so selection changes flow back into the panel, as they do in the app
+  const SelectionHarness = ({
+    initial,
+    onSelect,
+  }: {
+    initial: Guest[];
+    onSelect?: (id: string) => void;
+  }) => {
+    const [selected, setSelected] = useState<string | null>(null);
+    return (
+      <GuestListPanel
+        guests={initial}
+        selectedGuestId={selected}
+        onSelectGuest={(id) => {
+          onSelect?.(id);
+          setSelected(id);
+        }}
+      />
+    );
+  };
+  it("calls onSelectGuest with the guest ID when an entry is clicked", () => {
+    const onSelectGuest = vi.fn();
+    render(
+      <GuestListPanel guests={[alice, bob]} onSelectGuest={onSelectGuest} />,
+    );
+    fireEvent.click(getEntry("Bob Jones"));
+    expect(onSelectGuest).toHaveBeenCalledWith(bob.id);
+  });
+  it("marks the selected entry with aria-pressed=true and the selected class", () => {
+    render(<GuestListPanel guests={[alice, bob]} selectedGuestId={alice.id} />);
+    const aliceEntry = getEntry("Alice");
+    const bobEntry = getEntry("Bob Jones");
+    expect(aliceEntry.getAttribute("aria-pressed")).toBe("true");
+    expect(aliceEntry.classList.contains("selected")).toBe(true);
+    expect(bobEntry.getAttribute("aria-pressed")).toBe("false");
+    expect(bobEntry.classList.contains("selected")).toBe(false);
+  });
+  it("highlights an entry after a click", () => {
+    render(<SelectionHarness initial={[alice, bob]} />);
+    expect(getEntry("Alice").getAttribute("aria-pressed")).toBe("false");
+    fireEvent.click(getEntry("Alice"));
+    expect(getEntry("Alice").getAttribute("aria-pressed")).toBe("true");
+  });
+  it("moves the selection when a different entry is clicked", () => {
+    render(<SelectionHarness initial={[alice, bob]} />);
+    fireEvent.click(getEntry("Alice"));
+    fireEvent.click(getEntry("Bob Jones"));
+    expect(getEntry("Alice").getAttribute("aria-pressed")).toBe("false");
+    expect(getEntry("Bob Jones").getAttribute("aria-pressed")).toBe("true");
+  });
+  it("keeps the selection when the selected entry is clicked again", () => {
+    render(<SelectionHarness initial={[alice, bob]} />);
+    fireEvent.click(getEntry("Alice"));
+    fireEvent.click(getEntry("Alice"));
+    expect(getEntry("Alice").getAttribute("aria-pressed")).toBe("true");
+  });
+  it("keeps the selection across re-renders with new guests", () => {
+    const onSelectGuest = vi.fn();
+    const { rerender } = render(
+      <GuestListPanel
+        guests={[alice]}
+        selectedGuestId={alice.id}
+        onSelectGuest={onSelectGuest}
+      />,
+    );
+    rerender(
+      <GuestListPanel
+        guests={[alice, bob]}
+        selectedGuestId={alice.id}
+        onSelectGuest={onSelectGuest}
+      />,
+    );
+    expect(getEntry("Alice").getAttribute("aria-pressed")).toBe("true");
+    expect(getEntry("Bob Jones").getAttribute("aria-pressed")).toBe("false");
+    expect(onSelectGuest).not.toHaveBeenCalled();
+  });
+  it("does not mark any entry selected when selectedGuestId is null", () => {
+    render(<GuestListPanel guests={[alice, bob]} selectedGuestId={null} />);
+    expect(getEntry("Alice").getAttribute("aria-pressed")).toBe("false");
+    expect(getEntry("Bob Jones").getAttribute("aria-pressed")).toBe("false");
   });
 });

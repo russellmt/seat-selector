@@ -1,7 +1,14 @@
 import { describe, it, expect } from "vitest";
-import { render, screen, fireEvent, within } from "@testing-library/react";
+import {
+  render,
+  screen,
+  fireEvent,
+  within,
+  cleanup,
+} from "@testing-library/react";
 import { BrowserRouter, MemoryRouter, Route, Routes } from "react-router-dom";
 import GuestArrangement from "./GuestArrangement";
+import SeatCanvas from "./SeatCanvas";
 import { AppProvider } from "../context/AppContext";
 import { colorService } from "../services";
 
@@ -159,5 +166,248 @@ describe("GuestArrangement add guest flow", () => {
     expect(
       items.map((item) => item.querySelector(".guest-name")?.textContent),
     ).toEqual(["Alice", "Bob Jones"]);
+  });
+});
+
+describe("GuestArrangement guest selection", () => {
+  const addGuestThroughUi = (name: string) => {
+    fireEvent.click(screen.getByRole("button", { name: /add guest/i }));
+    fireEvent.change(screen.getByRole("textbox", { name: /guest name/i }), {
+      target: { value: name },
+    });
+    fireEvent.click(screen.getByRole("button", { name: /^add$/i }));
+  };
+  const getEntry = (name: string) =>
+    screen.getByRole("button", { name: new RegExp(name, "i") });
+  it("highlights a guest entry on single click", () => {
+    renderPage();
+    addGuestThroughUi("Alice");
+    addGuestThroughUi("Bob Jones");
+    fireEvent.click(getEntry("Alice"));
+    expect(getEntry("Alice").getAttribute("aria-pressed")).toBe("true");
+    expect(getEntry("Alice").classList.contains("selected")).toBe(true);
+    expect(getEntry("Bob Jones").getAttribute("aria-pressed")).toBe("false");
+  });
+  it("moves the highlight when a different guest is clicked", () => {
+    renderPage();
+    addGuestThroughUi("Alice");
+    addGuestThroughUi("Bob Jones");
+    fireEvent.click(getEntry("Alice"));
+    fireEvent.click(getEntry("Bob Jones"));
+    expect(getEntry("Alice").getAttribute("aria-pressed")).toBe("false");
+    expect(getEntry("Bob Jones").getAttribute("aria-pressed")).toBe("true");
+  });
+  it("keeps the selected guest highlighted after another guest is added", () => {
+    renderPage();
+    addGuestThroughUi("Alice");
+    fireEvent.click(getEntry("Alice"));
+    addGuestThroughUi("Bob Jones");
+    expect(getEntry("Alice").getAttribute("aria-pressed")).toBe("true");
+    expect(getEntry("Bob Jones").getAttribute("aria-pressed")).toBe("false");
+  });
+});
+
+describe("GuestArrangement layout matches SeatCanvas", () => {
+  // Shared layout selectors. Each must exist on both pages with the same class tokens.
+  const SHARED_LAYOUT_SELECTORS = [
+    ".seat-canvas-page",
+    ".canvas-header",
+    ".header-content",
+    ".canvas-main",
+    ".canvas-content",
+    ".icon-bank-sidebar",
+    ".grid-canvas",
+    ".canvas-footer",
+    ".footer-left",
+    ".footer-center",
+    ".footer-right",
+  ];
+  it("keeps every shared layout class on the Guest Arrangement page", () => {
+    const { container: canvas } = render(
+      <AppProvider>
+        <BrowserRouter>
+          <SeatCanvas />
+        </BrowserRouter>
+      </AppProvider>,
+    );
+    const canvasClasses = SHARED_LAYOUT_SELECTORS.map((selector) => {
+      const el = canvas.querySelector(selector);
+      expect(el, `SeatCanvas missing ${selector}`).not.toBeNull();
+      return [selector, Array.from(el!.classList)] as const;
+    });
+    cleanup();
+    const { container: arrangement } = renderPage();
+    for (const [selector, canvasTokens] of canvasClasses) {
+      const el = arrangement.querySelector(selector);
+      expect(el, `GuestArrangement missing ${selector}`).not.toBeNull();
+      for (const token of canvasTokens) {
+        expect(
+          el!.classList.contains(token),
+          `${selector} lost class ${token}`,
+        ).toBe(true);
+      }
+    }
+  });
+});
+
+describe("GuestArrangement Delete key", () => {
+  const addGuestThroughUi = (name: string) => {
+    fireEvent.click(screen.getByRole("button", { name: /add guest/i }));
+    fireEvent.change(screen.getByRole("textbox", { name: /guest name/i }), {
+      target: { value: name },
+    });
+    fireEvent.click(screen.getByRole("button", { name: /^add$/i }));
+  };
+  const getEntry = (name: string) =>
+    screen.getByRole("button", { name: new RegExp(name, "i") });
+  const guestListNames = () => {
+    const list = screen.getByRole("region", { name: /guest list/i });
+    return within(list)
+      .queryAllByRole("listitem")
+      .map((item) => item.querySelector(".guest-name")?.textContent);
+  };
+  const queryDialogHeading = () =>
+    screen.queryByRole("heading", { name: "Delete Guest" });
+
+  it("opens the confirmation dialog when Delete is pressed with a guest selected", () => {
+    renderPage();
+    addGuestThroughUi("Alice");
+    fireEvent.click(getEntry("Alice"));
+
+    fireEvent.keyDown(window, { key: "Delete" });
+
+    expect(queryDialogHeading()).not.toBeNull();
+    expect(guestListNames()).toEqual(["Alice"]);
+  });
+
+  it("does nothing when Delete is pressed with no selection", () => {
+    renderPage();
+    addGuestThroughUi("Alice");
+
+    fireEvent.keyDown(window, { key: "Delete" });
+
+    expect(queryDialogHeading()).toBeNull();
+    expect(guestListNames()).toEqual(["Alice"]);
+  });
+
+  it("ignores Delete while the add guest text field has focus", () => {
+    renderPage();
+    addGuestThroughUi("Alice");
+    fireEvent.click(getEntry("Alice"));
+    fireEvent.click(screen.getByRole("button", { name: /add guest/i }));
+
+    fireEvent.keyDown(screen.getByRole("textbox", { name: /guest name/i }), {
+      key: "Delete",
+    });
+
+    expect(queryDialogHeading()).toBeNull();
+    expect(guestListNames()).toEqual(["Alice"]);
+  });
+
+  it("removes the guest when the deletion is confirmed", () => {
+    renderPage();
+    addGuestThroughUi("Alice");
+    addGuestThroughUi("Bob Jones");
+    fireEvent.click(getEntry("Alice"));
+    fireEvent.keyDown(window, { key: "Delete" });
+
+    fireEvent.click(screen.getByRole("button", { name: "Delete" }));
+
+    expect(queryDialogHeading()).toBeNull();
+    expect(guestListNames()).toEqual(["Bob Jones"]);
+  });
+
+  it("keeps the guest and its selection when the deletion is cancelled", () => {
+    renderPage();
+    addGuestThroughUi("Alice");
+    fireEvent.click(getEntry("Alice"));
+    fireEvent.keyDown(window, { key: "Delete" });
+
+    fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
+
+    expect(queryDialogHeading()).toBeNull();
+    expect(guestListNames()).toEqual(["Alice"]);
+    expect(getEntry("Alice").getAttribute("aria-pressed")).toBe("true");
+  });
+
+  it("clears the selection when the selected guest is deleted", () => {
+    renderPage();
+    addGuestThroughUi("Alice");
+    fireEvent.click(getEntry("Alice"));
+    fireEvent.keyDown(window, { key: "Delete" });
+    fireEvent.click(screen.getByRole("button", { name: "Delete" }));
+
+    expect(screen.queryAllByRole("button", { pressed: true })).toHaveLength(0);
+
+    // With the selection cleared, a further Delete press opens no dialog.
+    fireEvent.keyDown(window, { key: "Delete" });
+    expect(queryDialogHeading()).toBeNull();
+  });
+
+  it("ignores a second Delete press while the confirmation dialog is open", () => {
+    renderPage();
+    addGuestThroughUi("Alice");
+    addGuestThroughUi("Bob Jones");
+    fireEvent.click(getEntry("Alice"));
+    fireEvent.keyDown(window, { key: "Delete" });
+
+    fireEvent.keyDown(window, { key: "Delete" });
+
+    expect(queryDialogHeading()).not.toBeNull();
+    expect(guestListNames()).toEqual(["Alice", "Bob Jones"]);
+  });
+
+  it("opens the confirmation dialog when Backspace is pressed with a guest selected", () => {
+    renderPage();
+    addGuestThroughUi("Alice");
+    fireEvent.click(getEntry("Alice"));
+
+    const notCancelled = fireEvent.keyDown(window, { key: "Backspace" });
+
+    expect(queryDialogHeading()).not.toBeNull();
+    expect(guestListNames()).toEqual(["Alice"]);
+    expect(notCancelled).toBe(false);
+  });
+
+  it("does not prevent Backspace when no guest is selected", () => {
+    renderPage();
+    addGuestThroughUi("Alice");
+
+    const notCancelled = fireEvent.keyDown(window, { key: "Backspace" });
+
+    expect(queryDialogHeading()).toBeNull();
+    expect(notCancelled).toBe(true);
+  });
+
+  it("ignores Backspace while the add guest text field has focus", () => {
+    renderPage();
+    addGuestThroughUi("Alice");
+    fireEvent.click(getEntry("Alice"));
+    fireEvent.click(screen.getByRole("button", { name: /add guest/i }));
+
+    const notCancelled = fireEvent.keyDown(
+      screen.getByRole("textbox", { name: /guest name/i }),
+      { key: "Backspace" },
+    );
+
+    expect(queryDialogHeading()).toBeNull();
+    expect(guestListNames()).toEqual(["Alice"]);
+    expect(notCancelled).toBe(true);
+  });
+
+  it("ignores Delete and Backspace inside a contenteditable element", () => {
+    renderPage();
+    addGuestThroughUi("Alice");
+    fireEvent.click(getEntry("Alice"));
+    const editable = document.createElement("div");
+    editable.setAttribute("contenteditable", "true");
+    document.body.appendChild(editable);
+
+    fireEvent.keyDown(editable, { key: "Delete" });
+    const notCancelled = fireEvent.keyDown(editable, { key: "Backspace" });
+
+    expect(queryDialogHeading()).toBeNull();
+    expect(notCancelled).toBe(true);
+    editable.remove();
   });
 });

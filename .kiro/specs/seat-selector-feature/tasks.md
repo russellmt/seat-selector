@@ -279,21 +279,26 @@ Build the Guest Arrangement page with guest management, assignment logic, bulk o
     - **Property 9: Non-Empty Guest Name Can Be Added**
     - **Validates: Requirements 21.1, 21.2, 21.3, 21.4, 21.5**
 
-- [ ] 19. Implement guest selection and deletion
-  - [ ] 19.1 Implement guest entry selection
+- [x] 19. Implement guest selection and deletion
+  - [x] 19.1 Implement guest entry selection
     - Single-click to highlight guest entry
     - Visual indicator for selected guest
     - Remember selection until user selects different guest
     - _Requirements: 23.1, 23.2, 23.3, 23.4_
-  - [ ] 19.2 Implement guest deletion
+  - [x] 19.2 Implement guest deletion
     - Delete key to remove selected guest
     - Show confirmation dialog before deletion
     - Unassign guest from all seats on deletion
     - Remove guest from AppContext state
     - _Requirements: 24.1, 24.2, 24.3, 24.4_
-  - [ ] 19.3 Write property tests for guest deletion
+  - [x] 19.3 Write property tests for guest deletion
     - **Property 12: Guest Deletion Removes From List**
     - **Validates: Requirements 24.1, 24.2, 24.3, 24.4**
+  - [x] 19.4 Add Backspace shortcut for guest deletion
+    - Handle Backspace the same way as Delete when a guest is selected on the guest page
+    - Ignore Delete and Backspace when focus is in an input, textarea, or contenteditable element
+    - Call preventDefault on Backspace only when the guest deletion path runs
+    - _Requirements: 24.1, 41.2, 41.4_
 
 - [ ] 20. Implement guest editing and color regeneration
   - [ ] 20.1 Implement guest name editing
