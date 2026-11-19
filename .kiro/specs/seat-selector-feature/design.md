@@ -992,8 +992,16 @@ function handleKeyDown(event: KeyboardEvent) {
     rotateSelectedIcon();
   }
   
-  // Delete key: delete selected guest (with confirmation)
-  if (event.key === 'Delete' && currentPage === 'guests' && selectedGuestId) {
+  // Delete or Backspace: delete selected guest (with confirmation)
+  if ((event.key === 'Delete' || event.key === 'Backspace') && currentPage === 'guests' && selectedGuestId) {
+    // Ignore keys typed into text fields
+    const target = event.target as HTMLElement;
+    if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) {
+      return;
+    }
+    if (event.key === 'Backspace') {
+      event.preventDefault();
+    }
     showConfirmationDialog({
       title: 'Delete Guest',
       message: `Remove "${selectedGuest.name}" from the arrangement?`,
@@ -1206,9 +1214,9 @@ const DEFAULT_ICONS: IconConfig[] = [
 
 ### Property 23: Keyboard Shortcuts Trigger Correct Actions
 
-*For any* keyboard input (arrow keys, R key, Delete key), the corresponding action SHALL be triggered correctly. Pressing the right arrow SHALL cycle to next icon, pressing R SHALL rotate, pressing Delete on selected guest SHALL prompt deletion.
+*For any* keyboard input (arrow keys, R key, Delete or Backspace key), the corresponding action SHALL be triggered correctly. Pressing the right arrow SHALL cycle to next icon, pressing R SHALL rotate, pressing Delete or Backspace on selected guest SHALL prompt deletion, and Delete or Backspace typed into a text field SHALL NOT prompt deletion.
 
-**Validates: Requirements 41.1, 41.2, 41.3**
+**Validates: Requirements 41.1, 41.2, 41.3, 41.4**
 
 ### Property 24: Input Validation Rejects Invalid Values
 

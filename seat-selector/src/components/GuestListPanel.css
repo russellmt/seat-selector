@@ -70,20 +70,60 @@
   background: var(--text);
 }
 
-/* Guest entry: circle above name */
+/* Grid cell for one guest. The <li> fills its 100px row; the button inside is the visible box. */
+.guest-list-entry {
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+}
+
+/* Guest entry: circle above name. Rendered as a button so it is keyboard-operable
+   and exposes aria-pressed, like the icon buttons in IconBank.
+   Border width is 2px in every state so selecting an entry never changes its size. */
 .guest-item {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 6px;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  box-sizing: border-box;
+  font: inherit;
   padding: 8px;
   background-color: var(--bg);
   border: 2px solid var(--border);
   border-radius: 6px;
   color: var(--text-h);
+  cursor: pointer;
+  transition: all 0.2s ease;
   min-height: 0;
   overflow: hidden;
+}
+
+.guest-item:hover {
+  background-color: var(--accent-bg);
+  border-color: var(--accent);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.guest-item:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Selected state: same colors and ring as the selected icon in IconBank.
+   Uses color and box-shadow only, so the box and its neighbors do not move. */
+.guest-item.selected,
+.guest-item.selected:hover {
+  background-color: var(--accent-bg);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(170, 59, 255, 0.2);
+}
+
+.guest-item.selected .guest-name {
+  color: var(--accent);
 }
 
 /* Guest name: up to two lines, then clipped */

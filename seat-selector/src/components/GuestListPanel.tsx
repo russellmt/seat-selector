@@ -3,21 +3,25 @@ import type { Guest } from "../types/Guest";
 import { GuestInitialCircle } from "./GuestInitialCircle";
 import { AddGuestInput } from "./AddGuestInput";
 import "./GuestListPanel.css";
-
 /**
  * Props for the GuestListPanel component
  */
 export interface GuestListPanelProps {
   /** Guests to display, in the order they should appear */
   guests: Guest[];
-
   /**
    * Called with the trimmed name when the user submits a new guest.
    * When omitted, the "+" add button is not rendered.
    */
   onAddGuest?: (name: string) => void;
+  /** ID of the currently selected guest (null when none is selected) */
+  selectedGuestId?: string | null;
+  /**
+   * Called with the guest ID when the user clicks an entry.
+   * Clicking an entry never deselects it; only a different entry changes the selection.
+   */
+  onSelectGuest?: (guestId: string) => void;
 }
-
 /**
  * GuestListPanel Component
  *
@@ -30,27 +34,34 @@ export interface GuestListPanelProps {
  * - 2-column grid with fixed-height rows, matching IconBank dimensions
  * - Scrollable container for long guest lists
  * - Color circle with initials per guest (via GuestInitialCircle)
+ * - Single click selects an entry. The selected entry uses aria-pressed and a
+ *   highlight that matches the selected icon in IconBank.
  *
- * Selecting, editing, sorting, and reordering are implemented in later tasks.
+ * Editing, sorting, deleting, and reordering are implemented in later tasks.
  *
- * **Validates: Requirements 20.1, 20.2, 20.3, 20.4, 20.5, 20.6, 21.1, 21.2**
+ * **Validates: Requirements 20.1, 20.2, 20.3, 20.4, 20.5, 20.6, 21.1, 21.2, 23.1, 23.2, 23.3**
  *
  * @example
  * ```tsx
- * <GuestListPanel guests={guests} onAddGuest={(name) => addGuest(...)} />
+ * <GuestListPanel
+ *   guests={guests}
+ *   selectedGuestId={selectedGuestId}
+ *   onSelectGuest={(id) => selectGuest(id)}
+ *   onAddGuest={(name) => addGuest(...)}
+ * />
  * ```
  */
 export const GuestListPanel: React.FC<GuestListPanelProps> = ({
   guests,
   onAddGuest,
+  selectedGuestId = null,
+  onSelectGuest,
 }) => {
   const [isAdding, setIsAdding] = useState<boolean>(false);
-
   const handleSubmit = (name: string) => {
     onAddGuest?.(name);
     setIsAdding(false);
   };
-
   return (
     <div className="guest-list" role="region" aria-label="Guest list">
       {onAddGuest && (
@@ -64,7 +75,6 @@ export const GuestListPanel: React.FC<GuestListPanelProps> = ({
           >
             +
           </button>
-
           {isAdding && (
             <AddGuestInput
               onSubmit={handleSubmit}
@@ -73,17 +83,26 @@ export const GuestListPanel: React.FC<GuestListPanelProps> = ({
           )}
         </div>
       )}
-
       <ul className="guest-list-grid">
-        {guests.map((guest) => (
-          <li key={guest.id} className="guest-item" title={guest.name}>
-            <GuestInitialCircle guest={guest} size="medium" />
-            <div className="guest-name">{guest.name}</div>
-          </li>
-        ))}
+        {guests.map((guest) => {
+          const isSelected = guest.id === selectedGuestId;
+          return (
+            <li key={guest.id} className="guest-list-entry">
+              <button
+                type="button"
+                className={`guest-item ${isSelected ? "selected" : ""}`}
+                aria-pressed={isSelected}
+                onClick={() => onSelectGuest?.(guest.id)}
+                title={guest.name}
+              >
+                <GuestInitialCircle guest={guest} size="medium" />
+                <div className="guest-name">{guest.name}</div>
+              </button>
+            </li>
+          );
+        })}
       </ul>
     </div>
   );
 };
-
 export default GuestListPanel;

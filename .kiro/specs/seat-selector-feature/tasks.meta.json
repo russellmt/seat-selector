@@ -31,6 +31,10 @@
     "14.3 Write property tests for seat deletion": {
       "status": "passed",
       "lastRunTimestamp": 1794597251267
+    },
+    "19.3 Write property tests for guest deletion": {
+      "status": "passed",
+      "lastRunTimestamp": 1795128301559
     }
   },
   "executionHistory": {
@@ -1021,6 +1025,16 @@
         "executionId": "79e87284-889b-4d73-959e-38d0e30a1064",
         "chatSessionId": "sess_6cbf1de5-eac2-4184-9ad2-b16ac7198acd",
         "timestamp": 1793829847433
+      },
+      {
+        "executionId": "b8b04de2-e1f4-4adb-bf0e-46fc9e20c881",
+        "chatSessionId": "sess_6a4bb19d-d853-4ec2-ab4e-0470a80566f5",
+        "timestamp": 1795127095604
+      },
+      {
+        "executionId": "b8b04de2-e1f4-4adb-bf0e-46fc9e20c881",
+        "chatSessionId": "sess_6a4bb19d-d853-4ec2-ab4e-0470a80566f5",
+        "timestamp": 1795127285060
       }
     ],
     "19.2 Implement guest deletion": [
@@ -1033,6 +1047,21 @@
         "executionId": "79e87284-889b-4d73-959e-38d0e30a1064",
         "chatSessionId": "sess_6cbf1de5-eac2-4184-9ad2-b16ac7198acd",
         "timestamp": 1793829847462
+      },
+      {
+        "executionId": "b8b04de2-e1f4-4adb-bf0e-46fc9e20c881",
+        "chatSessionId": "sess_6a4bb19d-d853-4ec2-ab4e-0470a80566f5",
+        "timestamp": 1795127288755
+      },
+      {
+        "executionId": "0fcaa00e-16f5-47c5-ab9a-a509c56c4272",
+        "chatSessionId": "sess_6a4bb19d-d853-4ec2-ab4e-0470a80566f5",
+        "timestamp": 1795127584870
+      },
+      {
+        "executionId": "0fcaa00e-16f5-47c5-ab9a-a509c56c4272",
+        "chatSessionId": "sess_6a4bb19d-d853-4ec2-ab4e-0470a80566f5",
+        "timestamp": 1795127706435
       }
     ],
     "19.3 Write property tests for guest deletion": [
@@ -1045,6 +1074,16 @@
         "executionId": "79e87284-889b-4d73-959e-38d0e30a1064",
         "chatSessionId": "sess_6cbf1de5-eac2-4184-9ad2-b16ac7198acd",
         "timestamp": 1793829847488
+      },
+      {
+        "executionId": "99b867e1-cb01-4288-90bc-12a392619d87",
+        "chatSessionId": "sess_189f9510-9688-4c86-beea-173a0a415313",
+        "timestamp": 1795127732811
+      },
+      {
+        "executionId": "99b867e1-cb01-4288-90bc-12a392619d87",
+        "chatSessionId": "sess_189f9510-9688-4c86-beea-173a0a415313",
+        "timestamp": 1795128308158
       }
     ],
     "20.1 Implement guest name editing": [
@@ -1667,6 +1706,25 @@
         "executionId": "01a92fa4-d4fd-46d1-a0d9-08126274ebc6",
         "chatSessionId": "sess_6a4bb19d-d853-4ec2-ab4e-0470a80566f5",
         "timestamp": 1795124912777
+      }
+    ],
+    "19. Implement guest selection and deletion": [
+      {
+        "executionId": "99b867e1-cb01-4288-90bc-12a392619d87",
+        "chatSessionId": "sess_189f9510-9688-4c86-beea-173a0a415313",
+        "timestamp": 1795128308250
+      }
+    ],
+    "19.4 Add Backspace shortcut for guest deletion": [
+      {
+        "executionId": "8822ca11-d11d-471c-b21b-c2bc75b6036c",
+        "chatSessionId": "sess_2857b367-f1ed-4f40-886b-163cf80dc3f2",
+        "timestamp": 1795130191463
+      },
+      {
+        "executionId": "8822ca11-d11d-471c-b21b-c2bc75b6036c",
+        "chatSessionId": "sess_2857b367-f1ed-4f40-886b-163cf80dc3f2",
+        "timestamp": 1795130240325
       }
     ]
   }

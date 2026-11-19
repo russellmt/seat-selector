@@ -344,7 +344,7 @@ The Seat Selector is an interactive web application that enables users to create
 
 #### Acceptance Criteria
 
-1. WHEN a guest entry is selected and the user presses the Delete key, THE Application SHALL remove that guest from the list
+1. WHEN a guest entry is selected and the user presses the Delete or Backspace key, THE Application SHALL remove that guest from the list
 2. BEFORE deleting, THE Application SHALL display a confirmation dialog
 3. WHEN the user confirms deletion, THE Application SHALL remove the guest and recalculate any seat assignments
 4. IF the deleted guest was assigned to seats, THOSE seats SHALL become unassigned (empty)
@@ -580,8 +580,9 @@ The Seat Selector is an interactive web application that enables users to create
 #### Acceptance Criteria
 
 1. WHEN the user presses the R key on Seat_Canvas, THE Application SHALL rotate the selected icon
-2. WHEN the user presses the Delete key with a guest selected, THE Application SHALL delete that guest (with confirmation)
+2. WHEN the user presses the Delete or Backspace key with a guest selected, THE Application SHALL delete that guest (with confirmation)
 3. KEYBOARD shortcuts SHALL be documented in the application UI (tooltip or help section)
+4. WHILE the user is typing in a text field, THE Application SHALL NOT treat the Delete or Backspace key as a guest deletion
 
 ---
 
